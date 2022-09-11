@@ -23,9 +23,6 @@ jobs:
             # - name: Test
             #   run: dotnet test --no-build --verbosity normal
 
-            - uses: actions/checkout@springplanningtool
-              with:
-                  fetch-depth: 0
             - uses: actions/setup-node@v3.4.1
             - name: npm install
               run: |
