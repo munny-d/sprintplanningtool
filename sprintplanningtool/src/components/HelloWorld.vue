@@ -1,8 +1,8 @@
 <template>
     <div class="">
         <h1>Sprint Planning Tool</h1>
-        <button>Register</button>
-        <button>Login</button>
+        <button class="btn">Register</button>
+        <button class="btn">Login</button>
     </div>
 </template>
 
@@ -50,3 +50,22 @@ export default defineComponent({
     },
 });
 </script>
+
+<style scoped>
+.btn {
+    font: inherit;
+    padding: 0.5rem 1.5rem;
+    background-color: rgb(140, 0, 255);
+    border: 1px solid rgb(140, 0, 255);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    margin: 0.5rem;
+}
+
+.btn:hover {
+    background-color: rgb(79, 10, 190);
+    border-color: rgb(79, 10, 190);
+}
+</style>
