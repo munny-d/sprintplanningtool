@@ -1,5 +1,5 @@
 <template>
-    <img alt="Vue logo" src="./assets/logo.png" />
+    <img alt="Currys logo" src="./assets/logo.png" />
     <HomePage />
 </template>
 

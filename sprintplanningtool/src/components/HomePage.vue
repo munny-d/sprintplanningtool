@@ -14,6 +14,7 @@
                             type="text"
                             id="name"
                             name="user_name"
+                            v-model="registerUsername"
                             placeholder="Enter your username"
                             required
                         />
@@ -24,26 +25,28 @@
                             type="email"
                             id="mail"
                             name="user_email"
+                            v-model="registerEmail"
                             placeholder="Enter your email"
                             required
                         />
                     </li>
                     <li class="form-control-inline">
-                        <label for="pwd">Password: </label>
+                        <label for="register-pwd">Password: </label>
                         <input
                             type="password"
-                            id="password"
-                            name="user_password"
-                            placeholder="Enter password"
+                            id="register-pwd"
+                            name="user_pwd"
+                            v-model="registerPwd"
+                            placeholder="Enter a password"
                         />
                     </li>
                     <li class="form-control-inline">
                         <label for="pwd-repeat">Repeat Password: </label>
                         <input
                             type="password"
-                            id="password"
-                            name="user_password"
-                            placeholder="Enter password"
+                            id="pwd-repeat"
+                            name="pwd_repeat"
+                            placeholder="Reenter password"
                         />
                     </li>
                     <li>
@@ -71,20 +74,28 @@
                         <input
                             type="text"
                             id="login-name"
+                            v-model="username"
                             name="login_name"
                             required
                         />
                     </li>
                     <li class="form-control-inline">
-                        <label for="login_mail">E-mail:</label>
+                        <label for="login_pwd">Password:</label>
                         <input
-                            type="email"
-                            id="login_mail"
-                            name="user_email"
+                            type="password"
+                            v-model="password"
+                            id="login_pwd"
+                            name="login_pwd"
                             required
                         />
                     </li>
-                    <button class="btn form-btn" type="submit">Login</button>
+                    <button
+                        class="btn form-btn"
+                        type="submit"
+                        @click="handleLogin"
+                    >
+                        Login
+                    </button>
                     <button
                         class="btn form-btn"
                         type="button"
@@ -100,11 +111,18 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { userService } from '../services/user-service';
 
 interface Data {
     loading: boolean;
     isRegisterFormOpen: boolean;
     isLoginFormOpen: boolean;
+    username: string;
+    password: string;
+    submitted: boolean;
+    registerUsername: string;
+    registerEmail: string;
+    registerPwd: string;
 }
 
 export default defineComponent({
@@ -113,34 +131,32 @@ export default defineComponent({
             loading: false,
             isRegisterFormOpen: false,
             isLoginFormOpen: false,
+            username: '',
+            password: '',
+            submitted: false,
+            registerUsername: '',
+            registerEmail: '',
+            registerPwd: '',
         };
     },
-    created() {
-        // fetch the data when the view is created and the data is
-        // already being observed
-        this.fetchData();
-    },
-    watch: {
-        // call again the method if the route changes
-        $route: 'fetchData',
-    },
     methods: {
-        fetchData(): void {
-            this.loading = true;
-
-            // fetch('weatherforecast')
-            //     .then((r) => r.json())
-            //     .then((json) => {
-            //         this.post = json as Forecasts;
-            //         this.loading = false;
-            //         return;
-            //     });
-        },
         toggleRegisterForm(): boolean {
             return (this.isRegisterFormOpen = !this.isRegisterFormOpen);
         },
         toggleLoginForm(): boolean {
             return (this.isLoginFormOpen = !this.isLoginFormOpen);
+        },
+        async handleLogin(e: any): Promise<void> {
+            e.preventDefault();
+
+            this.submitted = true;
+            const { username, password } = this;
+
+            console.log(`--USERNAME: ${username}, PASSWORD: ${password}`);
+
+            if (username && password) {
+                await userService.login(username, password);
+            }
         },
     },
 });
