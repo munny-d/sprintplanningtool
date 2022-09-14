@@ -1,17 +1,18 @@
 <template>
     <img alt="Currys logo" src="./assets/logo.png" />
-    <HomePage />
+    <div id="nav">
+        <router-link to="/">Home</router-link>
+        <router-link to="/create-report">Create Report</router-link>
+        <router-link to="/admin">Admin</router-link>
+    </div>
+    <router-view />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import HomePage from './components/HomePage.vue';
 
 export default defineComponent({
     name: 'App',
-    components: {
-        HomePage,
-    },
 });
 </script>
 

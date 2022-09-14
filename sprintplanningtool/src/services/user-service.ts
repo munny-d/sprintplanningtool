@@ -28,7 +28,6 @@ async function login(username: string, password: string) {
         localStorage.setItem('user', JSON.stringify(user));
     }
 
-    // TODO: REDIRECT TO CREATE REPORT PAGE
     return user;
 }
 
