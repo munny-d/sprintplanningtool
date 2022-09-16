@@ -1,8 +1,22 @@
 <template>
     <div class="main">
         <h1 id="home-title">Sprint Planning Tool</h1>
-        <button class="btn" @click="toggleRegisterForm">Register</button>
-        <button class="btn" @click="toggleLoginForm">Login</button>
+
+        <button
+            class="btn"
+            @click="toggleRegisterForm"
+            :disabled="isLoginFormOpen"
+        >
+            Register
+        </button>
+
+        <button
+            class="btn"
+            @click="toggleLoginForm"
+            :disabled="isRegisterFormOpen"
+        >
+            Login
+        </button>
 
         <!-- Register Form -->
         <UserRegisterForm
@@ -36,10 +50,14 @@ export default defineComponent({
     methods: {
         toggleRegisterForm(isFormOpen: any): boolean {
             isFormOpen = this.isRegisterFormOpen = !this.isRegisterFormOpen;
+            console.log(`REGISTER FORM: ${isFormOpen}`);
+
             return isFormOpen;
         },
         toggleLoginForm(isFormOpen: any): boolean {
             isFormOpen = this.isLoginFormOpen = !this.isLoginFormOpen;
+            console.log(`LOGIN FORM: ${isFormOpen}`);
+
             return isFormOpen;
         },
     },
@@ -55,6 +73,7 @@ export default defineComponent({
 ul {
     list-style-type: none;
 }
+
 .btn {
     font: inherit;
     padding: 0.5rem 1.5rem;
@@ -65,6 +84,12 @@ ul {
     cursor: pointer;
     margin-top: 0.5rem;
     margin: 0.5rem;
+}
+
+.btn:disabled,
+.btn:disabled:hover {
+    background-color: grey;
+    cursor: not-allowed;
 }
 
 .btn:hover {
@@ -78,7 +103,7 @@ ul {
 }
 
 form {
-    /* color: rgb(255, 255, 255); */
+    background-color: #e4dceb;
     padding: 1rem;
     border: solid 2px black;
     border-radius: 6px;
@@ -115,6 +140,7 @@ textarea:focus {
 
 .form-control-inline {
     display: flex;
+    margin: 0.6rem 0;
 }
 
 .form-control-inline input {

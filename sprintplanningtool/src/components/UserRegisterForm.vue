@@ -1,61 +1,79 @@
 <template>
-    <form action="" method="post" ref="form" @submit="handleRegister">
+    <Form
+        method="post"
+        ref="form"
+        @submit="onSubmit"
+        :validation-schema="schema"
+    >
         <ul>
+            <ErrorMessage name="username" class="invalid-field" />
             <li class="form-control-inline">
-                <label for="name">Username: </label>
-                <input
-                    type="text"
-                    id="name"
-                    name="user_name"
+                <label for="register-username">Username: </label>
+                <Field
+                    name="username"
+                    id="register-username"
                     v-model="registerUsername"
                     placeholder="Enter your username"
                 />
             </li>
+
+            <ErrorMessage name="email" class="invalid-field" />
             <li class="form-control-inline">
-                <label for="mail">E-mail: </label>
-                <input
+                <label for="register-email">E-mail: </label>
+                <Field
+                    name="email"
                     type="email"
-                    id="mail"
-                    name="user_email"
+                    id="register-email"
                     v-model="registerEmail"
                     placeholder="Enter your email"
                 />
             </li>
+
+            <ErrorMessage name="password" class="invalid-field" />
             <li class="form-control-inline">
                 <label for="register-pwd">Password: </label>
-                <input
+                <Field
+                    name="password"
                     type="password"
                     id="register-pwd"
-                    name="user_pwd"
                     v-model="registerPwd"
                     placeholder="Enter a password"
                 />
             </li>
+
+            <ErrorMessage name="pwdRepeat" class="invalid-field" />
             <li class="form-control-inline">
-                <label for="pwd-repeat">Repeat Password: </label>
-                <input
+                <label for="register-pwd-repeat">Repeat Password: </label>
+                <Field
+                    name="pwdRepeat"
                     type="password"
-                    id="pwd-repeat"
-                    name="pwd_repeat"
+                    id="register-pwd-repeat"
                     placeholder="Reenter password"
                 />
             </li>
             <p class="error">{{ errorMsg }}</p>
+            <p v-if="isLoading">Registering user...</p>
+            <p v-if="submitted" class="success">
+                User has successfully been created, please close this form to
+                login.
+            </p>
             <li>
                 <button class="btn form-btn" type="submit">
                     Create Account
                 </button>
                 <button class="btn form-btn" type="button" @click="onClose">
-                    Cancel
+                    Close
                 </button>
             </li>
         </ul>
-    </form>
+    </Form>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { userService } from '../services/user-service';
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
 
 interface Data {
     isRegisterFormOpen: false;
@@ -65,6 +83,7 @@ interface Data {
     registerEmail: string;
     registerPwd: string;
     errorMsg: string;
+    schema: object;
 }
 
 interface User {
@@ -73,11 +92,25 @@ interface User {
     password: string;
 }
 
-let user: User = {
-    username: '',
-    email: '',
-    password: '',
-};
+// A schema that uses Yup (MIT licensed JS package) for Form validation.
+const schema: any = yup.object().shape({
+    username: yup
+        .string()
+        .required('Username is required')
+        .matches(
+            /^[a-zA-Z0-9@]+$/,
+            'This field cannot be empty or contain special characters'
+        ),
+    email: yup.string().required('Email is required').email(),
+    password: yup
+        .string()
+        .required('Password is required')
+        .min(6, 'Password must be at least 6 characters'),
+    pwdRepeat: yup
+        .string()
+        .required('Please confirm your password.')
+        .oneOf([yup.ref('password')], 'Passwords do not match'),
+});
 
 export default defineComponent({
     data(): Data {
@@ -89,32 +122,37 @@ export default defineComponent({
             registerEmail: '',
             registerPwd: '',
             errorMsg: '',
+            schema,
         };
     },
+    components: {
+        Form,
+        Field,
+        ErrorMessage,
+    },
     methods: {
-        onClose(event: MouseEvent) {
-            console.log('---register form btn closed: ', event);
+        onClose() {
             this.$emit('isFormOpen', false);
         },
-        async handleRegister(e: any): Promise<void> {
-            e.preventDefault();
-            this.submitted = true;
+        async onSubmit(newUser: User | any, { resetForm }): Promise<void> {
+            this.isLoading = true;
+            this.submitted = false;
             this.errorMsg = '';
 
-            // TODO: Display success message and redirect to create report page
-            // TODO: ADD VALIDATION
-
             try {
-                user.username = this.registerUsername;
-                user.email = this.registerEmail;
-                user.password = this.registerPwd;
-                console.log(user);
-
                 userService
-                    .register(user)
-                    .then((res) => console.log('res', res))
-                    .catch((error) => (this.errorMsg = error));
+                    .register(newUser)
+                    .then(() => {
+                        this.submitted = true;
+                        this.isLoading = false;
+                        resetForm();
+                    })
+                    .catch((error) => {
+                        this.isLoading = false;
+                        this.errorMsg = error;
+                    });
             } catch (error) {
+                this.submitted = false;
                 console.log(`ERROR in catch block: ${error}`);
             }
         },
@@ -123,7 +161,16 @@ export default defineComponent({
 </script>
 
 <style>
-.error {
+.error,
+.invalid-field {
     color: red;
+    font-size: small;
+    margin: 0;
+    display: block;
+}
+
+.success {
+    color: green;
+    font-size: small;
 }
 </style>

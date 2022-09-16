@@ -1,23 +1,26 @@
 <template>
-    <form action="" method="post">
+    <Form method="post" @submit="onSubmit" :validation-schema="schema">
         <ul>
+            <ErrorMessage name="loginUsername" class="invalid-field" />
             <li class="form-control-inline">
                 <label for="login-name">Username:</label>
-                <input
+                <Field
                     type="text"
                     id="login-name"
                     v-model="username"
-                    name="login_name"
+                    name="loginUsername"
                     required
                 />
             </li>
+
+            <ErrorMessage name="loginPwd" class="invalid-field" />
             <li class="form-control-inline">
-                <label for="login_pwd">Password:</label>
-                <input
+                <label for="login-pwd">Password:</label>
+                <Field
                     type="password"
                     v-model="password"
-                    id="login_pwd"
-                    name="login_pwd"
+                    id="login-pwd"
+                    name="loginPwd"
                     required
                 />
             </li>
@@ -27,20 +30,20 @@
                 account details, please contact an admin.
             </p>
             <p class="error">{{ errorMsg }}</p>
-            <button class="btn form-btn" type="submit" @click="handleLogin">
-                Login
-            </button>
+            <button class="btn form-btn" type="submit">Login</button>
             <button class="btn form-btn" type="button" @click="onClose">
                 Cancel
             </button>
         </ul>
-    </form>
+    </Form>
 </template>
 
 <script lang="ts">
 import router from '../router';
 import { defineComponent } from 'vue';
 import { userService } from '../services/user-service';
+import { Form, Field, ErrorMessage } from 'vee-validate';
+import * as yup from 'yup';
 
 interface Data {
     isLoading: boolean;
@@ -50,7 +53,14 @@ interface Data {
     submitted: boolean;
     hasFailedValidation: boolean;
     errorMsg: string;
+    schema: object;
 }
+
+// A schema that uses Yup (MIT licensed JS package) for Form validation.
+const schema: any = yup.object().shape({
+    loginUsername: yup.string().required('Username is required'),
+    loginPwd: yup.string().required('Password is required'),
+});
 
 export default defineComponent({
     data(): Data {
@@ -62,16 +72,19 @@ export default defineComponent({
             submitted: false,
             hasFailedValidation: false,
             errorMsg: '',
+            schema,
         };
     },
+    components: {
+        Form,
+        Field,
+        ErrorMessage,
+    },
     methods: {
-        onClose(event: MouseEvent) {
-            console.log('---login form btn closed: ', event);
+        onClose() {
             this.$emit('isFormOpen', false);
         },
-        async handleLogin(e: any): Promise<void> {
-            e.preventDefault();
-
+        async onSubmit(): Promise<void> {
             this.submitted = true;
             this.isLoading = true;
             this.errorMsg = '';
@@ -104,7 +117,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.error {
+.error,
+.invalid-field {
     color: red;
+    font-size: small;
+    margin: 0;
+    display: block;
 }
 </style>
