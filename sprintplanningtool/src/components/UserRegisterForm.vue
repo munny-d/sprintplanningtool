@@ -1,5 +1,5 @@
 <template>
-    <form action="" method="post">
+    <form action="" method="post" ref="form" @submit="handleRegister">
         <ul>
             <li class="form-control-inline">
                 <label for="name">Username: </label>
@@ -9,7 +9,6 @@
                     name="user_name"
                     v-model="registerUsername"
                     placeholder="Enter your username"
-                    required
                 />
             </li>
             <li class="form-control-inline">
@@ -20,7 +19,6 @@
                     name="user_email"
                     v-model="registerEmail"
                     placeholder="Enter your email"
-                    required
                 />
             </li>
             <li class="form-control-inline">
@@ -42,6 +40,7 @@
                     placeholder="Reenter password"
                 />
             </li>
+            <p class="error">{{ errorMsg }}</p>
             <li>
                 <button class="btn form-btn" type="submit">
                     Create Account
@@ -56,6 +55,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { userService } from '../services/user-service';
 
 interface Data {
     isRegisterFormOpen: false;
@@ -64,7 +64,20 @@ interface Data {
     registerUsername: string;
     registerEmail: string;
     registerPwd: string;
+    errorMsg: string;
 }
+
+interface User {
+    username: string;
+    email: string;
+    password: string;
+}
+
+let user: User = {
+    username: '',
+    email: '',
+    password: '',
+};
 
 export default defineComponent({
     data(): Data {
@@ -75,17 +88,42 @@ export default defineComponent({
             registerUsername: '',
             registerEmail: '',
             registerPwd: '',
+            errorMsg: '',
         };
     },
     methods: {
-        onClose(event: PointerEvent) {
+        onClose(event: MouseEvent) {
             console.log('---register form btn closed: ', event);
             this.$emit('isFormOpen', false);
         },
         async handleRegister(e: any): Promise<void> {
             e.preventDefault();
-            // TODO
+            this.submitted = true;
+            this.errorMsg = '';
+
+            // TODO: Display success message and redirect to create report page
+            // TODO: ADD VALIDATION
+
+            try {
+                user.username = this.registerUsername;
+                user.email = this.registerEmail;
+                user.password = this.registerPwd;
+                console.log(user);
+
+                userService
+                    .register(user)
+                    .then((res) => console.log('res', res))
+                    .catch((error) => (this.errorMsg = error));
+            } catch (error) {
+                console.log(`ERROR in catch block: ${error}`);
+            }
         },
     },
 });
 </script>
+
+<style>
+.error {
+    color: red;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
     <div class="main">
-        <h1>Sprint Planning Tool</h1>
+        <h1 id="home-title">Sprint Planning Tool</h1>
         <button class="btn" @click="toggleRegisterForm">Register</button>
         <button class="btn" @click="toggleLoginForm">Login</button>
 
@@ -47,6 +47,11 @@ export default defineComponent({
 </script>
 
 <style>
+#home-title {
+    margin: 3rem;
+    text-align: center;
+}
+
 ul {
     list-style-type: none;
 }

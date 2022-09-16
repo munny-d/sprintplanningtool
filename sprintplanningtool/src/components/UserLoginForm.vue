@@ -21,6 +21,12 @@
                     required
                 />
             </li>
+            <p v-if="isLoading">Authenticating credentials...</p>
+            <p class="error" v-if="hasFailedValidation">
+                Please submit valid credentials. If you have forgotten your
+                account details, please contact an admin.
+            </p>
+            <p class="error">{{ errorMsg }}</p>
             <button class="btn form-btn" type="submit" @click="handleLogin">
                 Login
             </button>
@@ -42,6 +48,8 @@ interface Data {
     username: string;
     password: string;
     submitted: boolean;
+    hasFailedValidation: boolean;
+    errorMsg: string;
 }
 
 export default defineComponent({
@@ -52,10 +60,12 @@ export default defineComponent({
             username: '',
             password: '',
             submitted: false,
+            hasFailedValidation: false,
+            errorMsg: '',
         };
     },
     methods: {
-        onClose(event: PointerEvent) {
+        onClose(event: MouseEvent) {
             console.log('---login form btn closed: ', event);
             this.$emit('isFormOpen', false);
         },
@@ -63,15 +73,38 @@ export default defineComponent({
             e.preventDefault();
 
             this.submitted = true;
+            this.isLoading = true;
+            this.errorMsg = '';
+
             const { username, password } = this;
 
             console.log(`--USERNAME: ${username}, PASSWORD: ${password}`);
 
             if (username && password) {
-                await userService.login(username, password);
-                await router.push({ path: '/create-report' });
+                await userService
+                    .login(username, password)
+                    .then(() => {
+                        router.push({ path: '/create-report' });
+                    })
+                    .catch((error) => {
+                        this.isLoading = false;
+
+                        // Display error message delivered from the backend instead.
+                        this.hasFailedValidation = false;
+                        this.errorMsg = `${error}. If you have forgotten your
+                account details, please contact an admin.`;
+                    });
+            } else {
+                this.isLoading = false;
+                this.hasFailedValidation = true;
             }
         },
     },
 });
 </script>
+
+<style scoped>
+.error {
+    color: red;
+}
+</style>

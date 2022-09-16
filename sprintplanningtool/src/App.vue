@@ -1,9 +1,7 @@
 <template>
-    <img alt="Currys logo" src="./assets/logo.png" />
     <div id="nav">
-        <router-link to="/">Home</router-link>
-        <router-link to="/create-report">Create Report</router-link>
-        <router-link to="/admin">Admin</router-link>
+        <img alt="Currys logo" src="./assets/logo.png" />
+        <hr />
     </div>
     <router-view />
 </template>
@@ -29,5 +27,29 @@ export default defineComponent({
 body {
     /* background-color: #f9d2e5; */
     background-color: #e8e3e6;
+}
+
+#nav li {
+    display: inline;
+    text-align: left;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0),
+        rgba(85, 73, 91, 0.75),
+        rgba(0, 0, 0, 0)
+    );
+}
+
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 200px;
+    margin-bottom: 20px;
 }
 </style>
