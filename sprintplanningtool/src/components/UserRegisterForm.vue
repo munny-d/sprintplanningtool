@@ -93,7 +93,7 @@ interface User {
 }
 
 // A schema that uses Yup (MIT licensed JS package) for Form validation.
-const schema: any = yup.object().shape({
+const schema = yup.object().shape({
     username: yup
         .string()
         .required('Username is required')
