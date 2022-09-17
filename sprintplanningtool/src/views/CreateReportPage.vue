@@ -2,7 +2,7 @@
     <div>
         <header>
             <a @click="onLogout">Logout</a>
-            <h1>Create Report Page</h1>
+            <h1>Create a Sprint Planning Report</h1>
         </header>
 
         <section>
@@ -16,19 +16,18 @@
                 <ul>
                     <ErrorMessage name="" class="" />
                     <li>
-                        <label for="sprint-date">Start of sprint date: </label>
+                        <label for="sprint-date">Start date: </label>
                         <datepicker
                             name="startDate"
                             id="sprint-date"
                             v-model="sprintStartDate"
                             inputFormat="dd-MM-yyyy"
-                            @change="onChange()"
                         />
                     </li>
 
                     <li>
                         <label for="end-sprint-date"
-                            >End of sprint date:
+                            >End date:
                             {{
                                 (sprintEndDate = addWeeks(
                                     2,
@@ -38,39 +37,116 @@
                         </label>
                     </li>
 
-                    <li>
+                    <li class="field">
+                        <table id="team-table">
+                            <thead>
+                                <tr>
+                                    <th>Team</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="addedMember in addedMembers"
+                                    :key="addedMember.id"
+                                >
+                                    <td>
+                                        {{ addedMember.username }}
+                                        <button
+                                            class="remove-btn"
+                                            @click="removeMember(addedMember)"
+                                        >
+                                            remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
                         <label for="team-size">Add team member:</label>
-                        <Field name="team" multiple> </Field>
-                        <button>Add member</button>
-                        <button>Remove member</button>
+                        <Field
+                            name="team"
+                            as="select"
+                            multiple
+                            id="team-size-select"
+                            v-model="selectedMember"
+                            @change="onSelectChange"
+                        >
+                            <option
+                                v-for="member in members"
+                                :key="member.id"
+                                :value="member.username"
+                            >
+                                {{ member.username }}
+                            </option>
+                        </Field>
+
+                        <button @click="addMember">Add member</button>
                     </li>
 
-                    <li><span id="teamSize">Team Size: 0</span></li>
-
-                    <li>
-                        <label for="team-velocity">Planned Velocity </label>
-                        <span>Points from new stories: 10</span>
-                        <span>Points carried over: 5</span>
-                        <span>Total SP: 15</span>
+                    <li class="field">
+                        <span id="teamSize">Team Size: {{ teamSize }}</span>
                     </li>
 
-                    <li>
-                        <label for="sprint-goal">Sprint Goal </label>
-                        <span>Complete stories</span>
+                    <li class="field">
+                        <h3>Team Capacity</h3>
+                        <label for="absent-days" class="label-inline"
+                            >Planned number of holiday(s)</label
+                        >
+                        <Field
+                            name="absentDays"
+                            id="absent-days"
+                            type="number"
+                            min="0"
+                            v-model="absentDays"
+                            @change="calculateCapacity"
+                        />
+                        <label for="work-days" class="label-inline"
+                            >Total number of work day(s):
+                        </label>
+                        <Field
+                            name="workDays"
+                            id="work-days"
+                            type="number"
+                            min="0"
+                            max="10"
+                            disabled
+                            v-model="workDays"
+                        >
+                        </Field>
+                        <label class="label-inline">Team Capacity (%): </label>
+                        <h4>{{ capacity }}%</h4>
                     </li>
 
-                    <li>
-                        <label for="team-capacity">Team Capacity</label>
-                        <span>Total number of planned absences (days)</span>
-                        <span>Total number of work days</span>
-                        <span>Team Capacity (%): 80%</span>
+                    <li class="field">
+                        <h3>Planned Velocity</h3>
+                        <ul>
+                            <li class="field">
+                                Points from new stories:
+                                <Field
+                                    name="newSP"
+                                    type="number"
+                                    v-model="newSP"
+                                    @change="calculateTotalSP"
+                                    min="0"
+                                />
+                            </li>
+                            <li class="field">
+                                Points carried over:
+                                <Field
+                                    name="carriedSP"
+                                    type="number"
+                                    v-model="carriedSP"
+                                    @change="calculateTotalSP"
+                                    min="0"
+                                />
+                            </li>
+                            <li class="field">Total SP: {{ totalSP }}</li>
+                        </ul>
                     </li>
 
-                    <li>
-                        <label for="team-capacity">Team Capacity</label>
-                        <span>Total number of planned absences (days)</span>
-                        <span>Total number of work days</span>
-                        <span>Team Capacity (%): 80%</span>
+                    <li class="field">
+                        <label for="sprint-goal"><h3>Sprint Goal</h3></label>
+                        <Field name="sprintGoal" v-model="sprintGoal" />
                     </li>
 
                     <li>
@@ -91,11 +167,26 @@ import { Form, Field, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 import Datepicker from 'vue3-datepicker';
 
+interface Member {
+    id: number;
+    username: string;
+}
+
 interface Data {
     schema: object;
     sprintStartDate: Date;
-    sprintEndDate: Date;
-    team: string[];
+    sprintEndDate: Date | null;
+    members: Member[];
+    selectedMember: Member | any;
+    addedMembers: Member[];
+    teamSize: number;
+    absentDays: string;
+    workDays: number;
+    capacity: number;
+    newSP: string;
+    carriedSP: string;
+    totalSP: number;
+    sprintGoal: string;
 }
 
 // A schema that uses Yup (MIT licensed JS package) for Form validation.
@@ -109,7 +200,17 @@ export default defineComponent({
             schema,
             sprintStartDate: new Date(),
             sprintEndDate: null,
-            team: [],
+            members: [],
+            selectedMember: { id: 0, username: '' },
+            addedMembers: [],
+            teamSize: 0,
+            absentDays: '0',
+            workDays: 0,
+            capacity: 0,
+            newSP: '0',
+            carriedSP: '0',
+            totalSP: 0,
+            sprintGoal: '',
         };
     },
     components: {
@@ -118,19 +219,13 @@ export default defineComponent({
         ErrorMessage,
         Datepicker,
     },
+    created() {
+        this.getUsers();
+    },
     methods: {
         async onLogout(): Promise<void> {
             userService.logout();
             router.push({ path: '/' });
-        },
-        onSubmit() {
-            console.log('Submit clicked');
-        },
-        onChange() {
-            console.log('clicked');
-            console.log('VALUE: ', this.sprintStartDate);
-
-            // this.sprintEndDate = this.sprintStartDate + 12096e5;
         },
         addWeeks(numOfWeeks: number, date = new Date()) {
             const dateCopy = new Date(date.getTime());
@@ -138,6 +233,69 @@ export default defineComponent({
             dateCopy.setDate(dateCopy.getDate() + numOfWeeks * 7);
 
             return dateCopy;
+        },
+        async getUsers() {
+            const users = await userService
+                .getAll()
+                .catch((error) => console.log(error));
+
+            users.forEach((user: any) => {
+                this.members.push(user);
+            });
+        },
+        onSubmit() {
+            console.log('Submit clicked');
+        },
+        onSelectChange() {
+            // Assign property of the selected value. Each username in the list is unique.
+            this.members.forEach((member) => {
+                if (member.username === this.selectedMember[0]) {
+                    this.selectedMember = member;
+                }
+            });
+        },
+        addMember() {
+            if (this.selectedMember.username === '') {
+                alert('Please select a member to add.');
+                return;
+            }
+
+            // Validation check to prevent duplicated entries in the table.
+            let duplicateMember = this.addedMembers.find(
+                (member) => this.selectedMember.id === member.id
+            );
+
+            if (duplicateMember) {
+                alert('This member is already added to the team.');
+                return;
+            }
+
+            this.addedMembers.push(this.selectedMember);
+            this.teamSize = this.addedMembers.length;
+            this.calculateCapacity();
+        },
+        removeMember(member: Member) {
+            this.addedMembers = this.addedMembers.filter(
+                (currentMember) => currentMember.id != member.id
+            );
+            this.teamSize = this.addedMembers.length;
+            this.calculateCapacity();
+        },
+        calculateCapacity() {
+            this.workDays = this.addedMembers.length * 10;
+
+            if (this.workDays === 0) {
+                return (this.capacity = 0);
+            }
+
+            let absentPercentage =
+                (parseInt(this.absentDays) / this.workDays) * 100;
+            Math.round(absentPercentage);
+
+            this.capacity = 100 - absentPercentage;
+        },
+        calculateTotalSP() {
+            this.totalSP = parseInt(this.newSP) + parseInt(this.carriedSP);
         },
     },
 });
@@ -175,5 +333,42 @@ a:hover {
 
 li {
     text-align: -webkit-auto;
+}
+
+.field {
+    margin: 2rem;
+}
+
+#team-size-select {
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+#team-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-width: 2px;
+    border-style: solid;
+    margin-bottom: 1rem;
+    background-color: rgb(239, 239, 239);
+    text-align: center;
+}
+
+table td,
+table th {
+    border-width: 2px;
+    border-color: rgb(70, 59, 76);
+    border-style: solid;
+    padding: 3px;
+}
+
+.remove-btn {
+    margin-left: 10rem;
+}
+
+.label-inline {
+    display: inline;
 }
 </style>
