@@ -51,7 +51,7 @@
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="addedMember in addedMembers"
+                                    v-for="addedMember in teamMembers"
                                     :key="addedMember.id"
                                 >
                                     <td>
@@ -212,7 +212,7 @@ interface Data {
     sprintEndDate: Date | null;
     members: Member[];
     selectedMember: Member | any;
-    addedMembers: Member[];
+    teamMembers: Member[];
     teamSize: number;
     absentDays: string;
     workDays: number;
@@ -244,7 +244,7 @@ export default defineComponent({
             sprintEndDate: null,
             members: [],
             selectedMember: { id: 0, username: '' },
-            addedMembers: [],
+            teamMembers: [],
             teamSize: 0,
             absentDays: '0',
             workDays: 0,
@@ -303,7 +303,7 @@ export default defineComponent({
             }
 
             // Validation check to prevent duplicated entries in the table.
-            let duplicateMember = this.addedMembers.find(
+            let duplicateMember = this.teamMembers.find(
                 (member) => this.selectedMember.id === member.id
             );
 
@@ -312,19 +312,19 @@ export default defineComponent({
                 return;
             }
 
-            this.addedMembers.push(this.selectedMember);
-            this.teamSize = this.addedMembers.length;
+            this.teamMembers.push(this.selectedMember);
+            this.teamSize = this.teamMembers.length;
             this.calculateCapacity();
         },
         removeMember(member: Member) {
-            this.addedMembers = this.addedMembers.filter(
+            this.teamMembers = this.teamMembers.filter(
                 (currentMember) => currentMember.id != member.id
             );
-            this.teamSize = this.addedMembers.length;
+            this.teamSize = this.teamMembers.length;
             this.calculateCapacity();
         },
         calculateCapacity() {
-            this.workDays = this.addedMembers.length * 10;
+            this.workDays = this.teamMembers.length * 10;
 
             if (this.workDays === 0) {
                 return (this.capacity = 0);
