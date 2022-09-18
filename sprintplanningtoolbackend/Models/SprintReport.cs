@@ -2,7 +2,7 @@
 {
     public class SprintReport
     {
-        public int SprintId { get; set; }
+        public int Id { get; set; }
         public DateTime SprintStartDate { get; set; }
         public DateTime SprintEndDate { get; set; }
         public List<User>? TeamMembers { get; set; }
