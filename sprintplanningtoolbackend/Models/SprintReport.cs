@@ -2,6 +2,7 @@
 {
     public class SprintReport
     {
+        public int SprintId { get; set; }
         public DateTime SprintStartDate { get; set; }
         public DateTime SprintEndDate { get; set; }
         public List<User>? TeamMembers { get; set; }
@@ -15,5 +16,6 @@
         public string? SprintGoal { get; set; }
 
         public string? CreatedByUser { get; set; }
+        public DateTime? CreatedDate { get; set; }
     }
 }
