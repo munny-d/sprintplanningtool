@@ -1,5 +1,4 @@
 import { authHeader } from '../helpers/auth-header';
-// import { router } from '../helpers/router';
 
 export const userService = {
     login,
@@ -19,7 +18,6 @@ async function login(username: string, password: string) {
     };
 
     const response = await fetch(`/Users/authenticate`, requestOptions);
-    console.log('---RESPONSE = ', response);
 
     const user = await handleResponse(response);
     // login successful if there's a jwt token in the response

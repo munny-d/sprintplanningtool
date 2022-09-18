@@ -18,10 +18,12 @@
             _mapper = mapper;
         }
 
-        public void CreateReport(SprintReport model)
+        public void CreateReport(CreateReportRequest model, string user)
         {
-            // map model to new user object
+            // map model to new sprint object
             var report = _mapper.Map<SprintReport>(model);
+            report.CreatedDate = DateTime.Now.ToLocalTime();
+            report.CreatedByUser = user;
 
             // save report
             _context.SprintReports.Add(report);
@@ -47,7 +49,7 @@
         }        
         public SprintReport GetRecentlyCreatedReport()
         {
-            return _context.SprintReports.FirstOrDefault();
+            return _context.SprintReports.OrderByDescending(x => x.CreatedDate).ToList().First();
         }
         
         public IEnumerable<SprintReport> GetAllReports()

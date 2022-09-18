@@ -4,7 +4,7 @@
 
     public interface ISprintReportService
     {
-        void CreateReport(SprintReport sprintReport);
+        void CreateReport(CreateReportRequest sprintReport, string user);
         List<SprintReport> GetReportsByUsername (string username);
         SprintReport GetReportById (int id);
         SprintReport GetRecentlyCreatedReport ();

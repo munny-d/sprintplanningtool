@@ -25,6 +25,9 @@
                         return true;
                     }
                 ));
+
+            // Create -> Report
+            CreateMap<CreateReportRequest, SprintReport>();
         }
     }
 }
