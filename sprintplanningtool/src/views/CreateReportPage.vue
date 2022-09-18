@@ -26,22 +26,26 @@
                     </li>
 
                     <li>
-                        <label for="end-sprint-date"
-                            >End date:
+                        <label for="end-date" class="label-style">
+                            <h4>End date:</h4></label
+                        >
+                        <p class="display-info">
                             {{
-                                (sprintEndDate = addWeeks(
-                                    2,
-                                    sprintStartDate
-                                )).toLocaleDateString()
+                                formatDate(
+                                    (sprintEndDate = addWeeks(
+                                        2,
+                                        sprintStartDate
+                                    ))
+                                )
                             }}
-                        </label>
+                        </p>
                     </li>
 
-                    <li class="field">
+                    <li>
                         <table id="team-table">
                             <thead>
                                 <tr>
-                                    <th>Team</th>
+                                    <th>Team member(s)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -80,15 +84,18 @@
                             </option>
                         </Field>
 
-                        <button @click="addMember">Add member</button>
+                        <button @click="addMember" class="btn" id="add-btn">
+                            Add member
+                        </button>
                     </li>
 
-                    <li class="field">
-                        <span id="teamSize">Team Size: {{ teamSize }}</span>
+                    <li>
+                        <label id="team-size" class="display-info">
+                            Team Size: {{ teamSize }}
+                        </label>
                     </li>
 
-                    <li class="field">
-                        <h3>Team Capacity</h3>
+                    <li>
                         <label for="absent-days" class="label-inline"
                             >Planned number of holiday(s)</label
                         >
@@ -99,6 +106,7 @@
                             min="0"
                             v-model="absentDays"
                             @change="calculateCapacity"
+                            class="number-input"
                         />
                         <label for="work-days" class="label-inline"
                             >Total number of work day(s):
@@ -111,16 +119,17 @@
                             max="10"
                             disabled
                             v-model="workDays"
+                            class="number-input"
                         >
                         </Field>
                         <label class="label-inline">Team Capacity (%): </label>
                         <h4>{{ capacity }}%</h4>
                     </li>
 
-                    <li class="field">
+                    <li>
                         <h3>Planned Velocity</h3>
-                        <ul>
-                            <li class="field">
+                        <ul class="ul-inline">
+                            <li>
                                 Points from new stories:
                                 <Field
                                     name="newSP"
@@ -128,9 +137,10 @@
                                     v-model="newSP"
                                     @change="calculateTotalSP"
                                     min="0"
+                                    class="number-input"
                                 />
                             </li>
-                            <li class="field">
+                            <li>
                                 Points carried over:
                                 <Field
                                     name="carriedSP"
@@ -138,21 +148,32 @@
                                     v-model="carriedSP"
                                     @change="calculateTotalSP"
                                     min="0"
+                                    class="number-input"
                                 />
                             </li>
-                            <li class="field">Total SP: {{ totalSP }}</li>
                         </ul>
                     </li>
 
                     <li class="field">
-                        <label for="sprint-goal"><h3>Sprint Goal</h3></label>
-                        <Field name="sprintGoal" v-model="sprintGoal" />
+                        <h4 id="total-sp-header">
+                            Total SP:
+                            <span id="total-sp-number"> {{ totalSP }} </span>
+                        </h4>
                     </li>
 
                     <li>
-                        <button>Create a report</button>
-                        <button>Clear</button>
+                        <label for="sprint-goal"><h3>Sprint Goal</h3></label>
+                        <Field
+                            name="sprintGoal"
+                            v-model="sprintGoal"
+                            rules="max:50"
+                        />
                     </li>
+
+                    <div class="container">
+                        <button class="btn centre-btn">Create a report</button>
+                        <button class="btn centre-btn">Clear</button>
+                    </div>
                 </ul>
             </Form>
         </section>
@@ -297,6 +318,16 @@ export default defineComponent({
         calculateTotalSP() {
             this.totalSP = parseInt(this.newSP) + parseInt(this.carriedSP);
         },
+        padToTwoDigits(num: number) {
+            return num.toString().padStart(2, '0');
+        },
+        formatDate(date: Date) {
+            return [
+                this.padToTwoDigits(date.getDate()),
+                this.padToTwoDigits(date.getMonth() + 1),
+                date.getFullYear(),
+            ].join('-');
+        },
     },
 });
 </script>
@@ -314,6 +345,21 @@ a:hover {
     text-decoration: underline;
 }
 
+#sprint-report-form {
+    padding: 2rem;
+    display: flex;
+    font-size: unset;
+    font-weight: bold;
+    width: 500px;
+    display: flex;
+    justify-content: center;
+}
+
+#sprint-report-form input {
+    margin-top: 0.5rem;
+    display: flex;
+}
+
 #sprint-date {
     width: initial;
     display: flex;
@@ -325,6 +371,7 @@ a:hover {
 
 #sprint-report-form {
     font-size: small;
+    font-weight: bold;
 }
 
 #calendar {
@@ -335,22 +382,22 @@ li {
     text-align: -webkit-auto;
 }
 
-.field {
-    margin: 2rem;
+.number-input {
+    width: 20%;
 }
 
 #team-size-select {
-    width: 100%;
+    width: 50%;
     margin-top: 1rem;
     margin-bottom: 1rem;
-    text-align: center;
 }
 
 #team-table {
-    width: 100%;
+    width: 50%;
     border-collapse: collapse;
     border-width: 2px;
     border-style: solid;
+    margin-top: 1rem;
     margin-bottom: 1rem;
     background-color: rgb(239, 239, 239);
     text-align: center;
@@ -365,10 +412,64 @@ table th {
 }
 
 .remove-btn {
-    margin-left: 10rem;
+    background-color: #f74545;
+    color: white;
+    border: #8b2447 solid 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 5rem;
+    padding: 0.2rem 0.3rem;
 }
 
-.label-inline {
+.label-style {
     display: inline;
+}
+
+.ul-inline {
+    display: -webkit-box;
+}
+
+#total-sp-header {
+    text-align: center;
+    border: black solid 2px;
+    padding: 10px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#total-sp {
+    font-weight: bold;
+}
+
+.report-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.display-info {
+    border: black solid 1px;
+    padding: 5px 55px;
+    background-color: white;
+    width: fit-content;
+    margin-bottom: 2rem;
+}
+
+#add-btn {
+    margin-bottom: 2rem;
+}
+
+.centre-btn {
+    display: table-cell;
+    vertical-align: bottom;
+}
+
+.container {
+    display: table;
+    text-align: center;
+    width: 100%;
+    margin-top: 1.5rem;
 }
 </style>
