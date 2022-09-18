@@ -14,7 +14,6 @@
                 id="sprint-report-form"
             >
                 <ul>
-                    <ErrorMessage name="" class="" />
                     <li>
                         <label for="sprint-date">Start date: </label>
                         <datepicker
@@ -22,6 +21,7 @@
                             id="sprint-date"
                             v-model="sprintStartDate"
                             inputFormat="dd-MM-yyyy"
+                            rules="required"
                         />
                     </li>
 
@@ -42,6 +42,7 @@
                     </li>
 
                     <li>
+                        <ErrorMessage name="teamSize" class="invalid-field" />
                         <table id="team-table">
                             <thead>
                                 <tr>
@@ -68,12 +69,13 @@
 
                         <label for="team-size">Add team member:</label>
                         <Field
-                            name="team"
+                            name="teamMembers"
                             as="select"
                             multiple
                             id="team-size-select"
                             v-model="selectedMember"
                             @change="onSelectChange"
+                            rules="required"
                         >
                             <option
                                 v-for="member in members"
@@ -90,9 +92,16 @@
                     </li>
 
                     <li>
-                        <label id="team-size" class="display-info">
-                            Team Size: {{ teamSize }}
-                        </label>
+                        <label for="">Team Size: </label>
+                        <Field
+                            id="team-size"
+                            class="number-input"
+                            name="teamSize"
+                            type="number"
+                            disabled
+                            v-model="teamSize"
+                        >
+                        </Field>
                     </li>
 
                     <li>
@@ -104,6 +113,7 @@
                             id="absent-days"
                             type="number"
                             min="0"
+                            :max="workDays"
                             v-model="absentDays"
                             @change="calculateCapacity"
                             class="number-input"
@@ -123,7 +133,7 @@
                         >
                         </Field>
                         <label class="label-inline">Team Capacity (%): </label>
-                        <h4>{{ capacity }}%</h4>
+                        <h4>{{ Math.round(capacity) }}%</h4>
                     </li>
 
                     <li>
@@ -162,6 +172,7 @@
                     </li>
 
                     <li>
+                        <ErrorMessage name="sprintGoal" class="invalid-field" />
                         <label for="sprint-goal"><h3>Sprint Goal</h3></label>
                         <Field
                             name="sprintGoal"
@@ -171,7 +182,9 @@
                     </li>
 
                     <div class="container">
-                        <button class="btn centre-btn">Create a report</button>
+                        <button class="btn centre-btn" type="submit">
+                            Create a report
+                        </button>
                         <button class="btn centre-btn">Clear</button>
                     </div>
                 </ul>
@@ -212,7 +225,15 @@ interface Data {
 
 // A schema that uses Yup (MIT licensed JS package) for Form validation.
 const schema = yup.object().shape({
-    username: yup.date().required('Date is required'),
+    teamSize: yup.number().min(1, 'There needs to be at least 1 member added.'),
+    absentDays: yup.number(),
+    sprintGoal: yup
+        .string()
+        .matches(
+            /^[\w.]/,
+            'Please fill in the sprint goal. Special characters such as "!@<" are not allowed.'
+        )
+        .min(5, 'Sprint goal must be at least 5 characters.'),
 });
 
 export default defineComponent({
@@ -311,7 +332,6 @@ export default defineComponent({
 
             let absentPercentage =
                 (parseInt(this.absentDays) / this.workDays) * 100;
-            Math.round(absentPercentage);
 
             this.capacity = 100 - absentPercentage;
         },
