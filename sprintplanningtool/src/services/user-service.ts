@@ -1,4 +1,6 @@
+import router from '@/router';
 import { authHeader } from '../helpers/auth-header';
+import { User } from 'interfaces/User';
 
 export const userService = {
     login,
@@ -8,6 +10,7 @@ export const userService = {
     getById,
     update,
     delete: _delete,
+    navigateToAdminPage,
 };
 
 async function login(username: string, password: string) {
@@ -88,6 +91,13 @@ async function _delete(id: string) {
 
     const response = await fetch(`/api/Users/${id}`, requestOptions);
     return handleResponse(response);
+}
+
+async function navigateToAdminPage(id: string) {
+    const currentUser: User = JSON.parse(localStorage.getItem('user') as any);
+    const error = alert('You do not have permissions to access this page.');
+
+    currentUser.isAdmin ? router.push('/admin') : error;
 }
 
 function handleResponse(response: any) {
