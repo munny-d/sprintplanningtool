@@ -4,13 +4,13 @@
     using sprintplanningtoolbackend.Helpers;
     using sprintplanningtoolbackend.Models;
 
-    public class SprintReportService : ISprintReportService
+    public class SprintReportServices : ISprintReportServices
     {
         private DBContext _context;
         private readonly IMapper _mapper;
 
 
-        public SprintReportService(
+        public SprintReportServices(
                 DBContext context,
                 IMapper mapper)
         {
@@ -18,18 +18,17 @@
             _mapper = mapper;
         }
 
-        public void CreateReport(CreateReportRequest model, string user)
+        public void CreateReport(CreateReportRequest model)
         {
             // map model to new sprint object
             var report = _mapper.Map<SprintReport>(model);
             report.CreatedDate = DateTime.Now.ToLocalTime();
-            report.CreatedByUser = user;
 
             // save report
             _context.SprintReports.Add(report);
             _context.SaveChanges();
-        }        
-        
+        }
+
         public List<SprintReport> GetReportsByUsername(string username)
         {
             var reports = _context.SprintReports.Where(x => x.CreatedByUser == username)
@@ -63,6 +62,22 @@
             _context.SprintReports.Remove(report);
             _context.SaveChanges();
         }
-        
+
+        public IEnumerable<TeamMember> GetTeamMembersFromReport(int id)
+        {
+            var teamMembers = _context.TeamMembers;
+
+            List<TeamMember> newMembers = new List<TeamMember>();
+
+            foreach (var member in teamMembers)
+            {
+                if (id == member.SprintReportId)
+                {
+                    newMembers.Add(member);
+                }
+            }
+            
+            return newMembers;
+        }
     }
 }

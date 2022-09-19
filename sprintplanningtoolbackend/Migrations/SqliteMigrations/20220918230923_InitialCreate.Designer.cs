@@ -11,8 +11,8 @@ using sprintplanningtoolbackend.Helpers;
 namespace sprintplanningtoolbackend.Migrations.SqliteMigrations
 {
     [DbContext(typeof(SqliteDBContext))]
-    [Migration("20220918015251_makeSprintReportTable")]
-    partial class makeSprintReportTable
+    [Migration("20220918230923_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -66,6 +66,25 @@ namespace sprintplanningtoolbackend.Migrations.SqliteMigrations
                     b.ToTable("SprintReports");
                 });
 
+            modelBuilder.Entity("sprintplanningtoolbackend.Models.TeamMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("SprintReportId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SprintReportId");
+
+                    b.ToTable("TeamMembers");
+                });
+
             modelBuilder.Entity("sprintplanningtoolbackend.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -78,20 +97,15 @@ namespace sprintplanningtoolbackend.Migrations.SqliteMigrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("SprintReportId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Username")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SprintReportId");
-
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("sprintplanningtoolbackend.Models.User", b =>
+            modelBuilder.Entity("sprintplanningtoolbackend.Models.TeamMember", b =>
                 {
                     b.HasOne("sprintplanningtoolbackend.Models.SprintReport", null)
                         .WithMany("TeamMembers")

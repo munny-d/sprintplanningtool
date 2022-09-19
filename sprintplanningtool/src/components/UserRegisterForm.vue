@@ -134,6 +134,7 @@ export default defineComponent({
         onClose() {
             this.$emit('isFormOpen', false);
         },
+        // @ts-ignore
         async onSubmit(newUser: User | any, { resetForm }): Promise<void> {
             this.isLoading = true;
             this.submitted = false;

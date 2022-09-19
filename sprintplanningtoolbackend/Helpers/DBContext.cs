@@ -19,7 +19,7 @@
         }
 
         public DbSet<User> Users { get; set; }
-        
         public DbSet<SprintReport> SprintReports { get; set; }
+        public DbSet<TeamMember> TeamMembers { get; set; }
     }
 }

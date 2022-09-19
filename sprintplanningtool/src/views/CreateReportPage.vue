@@ -86,7 +86,12 @@
                             </option>
                         </Field>
 
-                        <button @click="addMember" class="btn" id="add-btn">
+                        <button
+                            @click="addMember"
+                            class="btn"
+                            id="add-btn"
+                            type="button"
+                        >
                             Add member
                         </button>
                     </li>
@@ -187,6 +192,10 @@
                         </button>
                         <button class="btn centre-btn">Clear</button>
                     </div>
+
+                    <li>
+                        <p v-if="isLoading">Creating report...</p>
+                    </li>
                 </ul>
             </Form>
         </section>
@@ -200,10 +209,26 @@ import { userService } from '../services/user-service';
 import { Form, Field, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 import Datepicker from 'vue3-datepicker';
+import { reportService } from '../services/report-service';
 
 interface Member {
     id: number;
     username: string;
+}
+
+interface ReportReq {
+    sprintStartDate: Date;
+    sprintEndDate: Date;
+    teamMembers: Member[];
+    teamSize: number;
+    absentDays: number;
+    workDays: number;
+    capacity: number;
+    newSP: number;
+    carriedSP: number;
+    totalSP: number;
+    sprintGoal: string;
+    createdByUser: any;
 }
 
 interface Data {
@@ -214,13 +239,15 @@ interface Data {
     selectedMember: Member | any;
     teamMembers: Member[];
     teamSize: number;
-    absentDays: string;
+    absentDays: number;
     workDays: number;
     capacity: number;
-    newSP: string;
-    carriedSP: string;
+    newSP: number;
+    carriedSP: number;
     totalSP: number;
     sprintGoal: string;
+    submitted: boolean;
+    isLoading: boolean;
 }
 
 // A schema that uses Yup (MIT licensed JS package) for Form validation.
@@ -246,13 +273,15 @@ export default defineComponent({
             selectedMember: { id: 0, username: '' },
             teamMembers: [],
             teamSize: 0,
-            absentDays: '0',
+            absentDays: 0,
             workDays: 0,
             capacity: 0,
-            newSP: '0',
-            carriedSP: '0',
+            newSP: 0,
+            carriedSP: 0,
             totalSP: 0,
             sprintGoal: '',
+            submitted: false,
+            isLoading: false,
         };
     },
     components: {
@@ -269,13 +298,6 @@ export default defineComponent({
             userService.logout();
             router.push({ path: '/' });
         },
-        addWeeks(numOfWeeks: number, date = new Date()) {
-            const dateCopy = new Date(date.getTime());
-
-            dateCopy.setDate(dateCopy.getDate() + numOfWeeks * 7);
-
-            return dateCopy;
-        },
         async getUsers() {
             const users = await userService
                 .getAll()
@@ -285,8 +307,36 @@ export default defineComponent({
                 this.members.push(user);
             });
         },
-        onSubmit() {
+        async onSubmit(): Promise<void> {
             console.log('Submit clicked');
+            this.isLoading = true;
+
+            const currentUser = JSON.parse(localStorage.getItem('user') as any);
+            this.resetTeamMemberId();
+
+            // Assign values to a request body obj needed for creating a report.
+            const reportReq: ReportReq = {
+                sprintStartDate: this.sprintStartDate,
+                sprintEndDate: this.sprintEndDate as any,
+                teamMembers: this.teamMembers,
+                teamSize: this.teamSize,
+                absentDays: this.absentDays,
+                workDays: this.workDays,
+                carriedSP: this.carriedSP,
+                newSP: this.newSP,
+                capacity: this.capacity,
+                totalSP: this.totalSP,
+                sprintGoal: this.sprintGoal,
+                createdByUser: currentUser.username,
+            };
+
+            console.log('TEAM NAMES: ', reportReq.teamMembers);
+
+            reportService
+                .create(reportReq)
+                .then(() => router.push('/dashboard'));
+
+            this.isLoading = false;
         },
         onSelectChange() {
             // Assign property of the selected value. Each username in the list is unique.
@@ -295,6 +345,11 @@ export default defineComponent({
                     this.selectedMember = member;
                 }
             });
+        },
+        addWeeks(numOfWeeks: number, date = new Date()) {
+            const dateCopy = new Date(date.getTime());
+            dateCopy.setDate(dateCopy.getDate() + numOfWeeks * 7);
+            return dateCopy;
         },
         addMember() {
             if (this.selectedMember.username === '') {
@@ -317,6 +372,7 @@ export default defineComponent({
             this.calculateCapacity();
         },
         removeMember(member: Member) {
+            // Filter to remove selected member from the array of members.
             this.teamMembers = this.teamMembers.filter(
                 (currentMember) => currentMember.id != member.id
             );
@@ -330,13 +386,12 @@ export default defineComponent({
                 return (this.capacity = 0);
             }
 
-            let absentPercentage =
-                (parseInt(this.absentDays) / this.workDays) * 100;
+            let absentPercentage = (this.absentDays / this.workDays) * 100;
 
             this.capacity = 100 - absentPercentage;
         },
         calculateTotalSP() {
-            this.totalSP = parseInt(this.newSP) + parseInt(this.carriedSP);
+            this.totalSP = this.newSP + this.carriedSP;
         },
         padToTwoDigits(num: number) {
             return num.toString().padStart(2, '0');
@@ -347,6 +402,9 @@ export default defineComponent({
                 this.padToTwoDigits(date.getMonth() + 1),
                 date.getFullYear(),
             ].join('-');
+        },
+        resetTeamMemberId() {
+            this.teamMembers.forEach((x) => (x.id = 0));
         },
     },
 });

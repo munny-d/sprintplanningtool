@@ -28,6 +28,9 @@
 
             // Create -> Report
             CreateMap<CreateReportRequest, SprintReport>();
+
+            // TeamMember -> SprintReport
+            CreateMap<TeamMember, SprintReport>();
         }
     }
 }

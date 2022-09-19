@@ -1,22 +1,24 @@
-﻿namespace sprintplanningtoolbackend.Controllers
-{
-    using AutoMapper;
-    using Microsoft.AspNetCore.Mvc;
-    using sprintplanningtoolbackend.Services;
-    using sprintplanningtoolbackend.Models;
-    using Microsoft.Extensions.Options;
-    using sprintplanningtoolbackend.Helpers;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using System.Security;
+using sprintplanningtoolbackend.Services;
+using sprintplanningtoolbackend.Models;
+using Microsoft.Extensions.Options;
+using sprintplanningtoolbackend.Helpers;
+using System.Security.Claims;
 
+namespace sprintplanningtoolbackend.Controllers
+{
     [ApiController]
     [Route("api/[controller]")]
     public class ReportsController : ControllerBase
     {
-        private ISprintReportService _reportService;
+        private ISprintReportServices _reportService;
         private IMapper _mapper;
         private readonly AppSettings _appSettings;
 
         public ReportsController(
-            ISprintReportService reportService,
+            ISprintReportServices reportService,
             IMapper mapper, IOptions<AppSettings> appSettings)
         {
             _reportService = reportService;
@@ -33,15 +35,13 @@
         [HttpPost("create")]
         public IActionResult CreateReport(CreateReportRequest model)
         {
-            var user = User?.Identity?.Name;
-            _reportService.CreateReport(model, user);
+            _reportService.CreateReport(model);
             return Ok(new { message = "Report is successfully created" });
         }
 
         /// <summary>
         /// Get
         /// </summary>
-        /// <param name="model"></param>
         /// <returns></returns>
         // GET: api/<ReportsController>/
         [HttpGet()]
@@ -74,6 +74,19 @@
         {
             var report = _reportService.GetRecentlyCreatedReport();
             return Ok(report);
+        }
+
+        /// <summary>
+        /// Get team members by sprint report id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        // GET api/<ReportsController>/team
+        [HttpGet("team/{id}")]
+        public IActionResult GetTeamById(int id)
+        {
+            var team = _reportService.GetTeamMembersFromReport(id);
+            return Ok(team);
         }
 
         /// <summary>

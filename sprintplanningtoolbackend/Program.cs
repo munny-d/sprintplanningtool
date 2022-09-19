@@ -21,7 +21,7 @@ services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"))
 // configure DI for application services
 services.AddScoped<IJwtUtils, JwtUtils>();
 services.AddScoped<IUserService, UserService>();
-services.AddScoped<ISprintReportService, SprintReportService>();
+services.AddScoped<ISprintReportServices, SprintReportServices>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();

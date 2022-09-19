@@ -2,7 +2,7 @@ import { createWebHistory, createRouter } from 'vue-router';
 
 import HomePage from '../views/HomePage.vue';
 import CreateReportPage from '../views/CreateReportPage.vue';
-import ResultsPage from '../views/ResultsPage.vue';
+import DashboardPage from '../views/DashboardPage.vue';
 import AdminPage from '../views/AdminPage.vue';
 import NotFoundPage from '../views/NotFoundPage.vue';
 
@@ -13,7 +13,7 @@ const routes = [
         name: 'Create-Report',
         component: CreateReportPage,
     },
-    { path: '/results', name: 'Results', component: ResultsPage },
+    { path: '/dashboard', name: 'Dashboard', component: DashboardPage },
     { path: '/admin', name: 'Admin', component: AdminPage },
     { path: '/:catchAll(.*)', name: 'NotFound', component: NotFoundPage },
 ];

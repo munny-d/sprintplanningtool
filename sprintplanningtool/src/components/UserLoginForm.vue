@@ -91,8 +91,6 @@ export default defineComponent({
 
             const { username, password } = this;
 
-            console.log(`--USERNAME: ${username}, PASSWORD: ${password}`);
-
             if (username && password) {
                 await userService
                     .login(username, password)

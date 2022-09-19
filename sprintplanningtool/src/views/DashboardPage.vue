@@ -1,6 +1,9 @@
 <template>
     <div>
-        <h1>Results Page</h1>
+        <h1>Sprint Report</h1>
+        <ul>
+            <li>Start Date</li>
+        </ul>
     </div>
 </template>
 

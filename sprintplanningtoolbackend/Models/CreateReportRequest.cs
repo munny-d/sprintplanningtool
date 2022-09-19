@@ -10,8 +10,7 @@
         [Required]
         public DateTime? SprintEndDate { get; set; }
 
-        [Required(ErrorMessage = "At least one member needs to be added to create a report.")]
-        public List<User>? Members { get; set; }
+        public ICollection<TeamMember>? TeamMembers { get; set; }
 
         [Required]
         public int TeamSize { get; set; }
@@ -19,6 +18,8 @@
         public int AbsentDays { get; set; }
 
         public int WorkDays { get; set; }
+
+        public int Capacity { get; set; }
 
         public int CarriedSP { get; set; }
 
@@ -28,5 +29,7 @@
 
         [Required(ErrorMessage = "Please enter a sprint goal.")]
         public string? SprintGoal { get; set; }
+
+        public string CreatedByUser { get; set; }
     }
 }

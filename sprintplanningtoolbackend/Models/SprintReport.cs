@@ -1,11 +1,14 @@
 ﻿namespace sprintplanningtoolbackend.Models
 {
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+
     public class SprintReport
     {
         public int Id { get; set; }
         public DateTime SprintStartDate { get; set; }
         public DateTime SprintEndDate { get; set; }
-        public List<User>? TeamMembers { get; set; }
+        public ICollection<TeamMember>? TeamMembers { get; set; }
         public int? TeamSize { get; set; }
         public int? AbsentDays { get; set; }
         public int? WorkDays { get; set; }

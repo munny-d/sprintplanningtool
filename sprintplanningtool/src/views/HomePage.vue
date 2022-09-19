@@ -50,14 +50,10 @@ export default defineComponent({
     methods: {
         toggleRegisterForm(isFormOpen: any): boolean {
             isFormOpen = this.isRegisterFormOpen = !this.isRegisterFormOpen;
-            console.log(`REGISTER FORM: ${isFormOpen}`);
-
             return isFormOpen;
         },
         toggleLoginForm(isFormOpen: any): boolean {
             isFormOpen = this.isLoginFormOpen = !this.isLoginFormOpen;
-            console.log(`LOGIN FORM: ${isFormOpen}`);
-
             return isFormOpen;
         },
     },

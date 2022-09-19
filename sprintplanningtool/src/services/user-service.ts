@@ -17,7 +17,7 @@ async function login(username: string, password: string) {
         body: JSON.stringify({ username, password }),
     };
 
-    const response = await fetch(`/Users/authenticate`, requestOptions);
+    const response = await fetch(`/api/Users/authenticate`, requestOptions);
 
     const user = await handleResponse(response);
     // login successful if there's a jwt token in the response
@@ -41,7 +41,7 @@ async function register(user: any) {
         body: JSON.stringify(user),
     };
 
-    const response = await fetch(`/Users/register`, requestOptions);
+    const response = await fetch(`/api/Users/register`, requestOptions);
     return handleResponse(response);
 }
 
@@ -51,7 +51,7 @@ async function getAll() {
         headers: authHeader() as HeadersInit,
     };
 
-    const response = await fetch(`/Users`, requestOptions);
+    const response = await fetch(`/api/Users`, requestOptions);
     return handleResponse(response);
 }
 
@@ -61,7 +61,7 @@ async function getById(id: string) {
         headers: authHeader() as HeadersInit,
     };
 
-    const response = await fetch(`/Users/${id}`, requestOptions);
+    const response = await fetch(`/api/Users/${id}`, requestOptions);
     return handleResponse(response);
 }
 
@@ -75,7 +75,7 @@ async function update(user: any) {
         body: JSON.stringify(user),
     };
 
-    const response = await fetch(`/Users/${user.id}`, requestOptions);
+    const response = await fetch(`/api/Users/${user.id}`, requestOptions);
     return handleResponse(response);
 }
 
@@ -86,7 +86,7 @@ async function _delete(id: string) {
         headers: authHeader() as HeadersInit,
     };
 
-    const response = await fetch(`/Users/${id}`, requestOptions);
+    const response = await fetch(`/api/Users/${id}`, requestOptions);
     return handleResponse(response);
 }
 
