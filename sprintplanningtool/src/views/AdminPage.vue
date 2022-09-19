@@ -13,7 +13,7 @@
                         <td>
                             {{ user.username }}
 
-                            <button id="edit-btn" @click="displayInfo(user)">
+                            <button id="edit-btn" @click="displayModal(user)">
                                 edit
                             </button>
                         </td>
@@ -22,8 +22,12 @@
             </table>
         </div>
         <div>
-            test
-            <user-modal></user-modal>
+            <user-modal
+                :user="user"
+                :showModal="show"
+                v-if="show"
+                @isModalOpen="toggleModal"
+            ></user-modal>
         </div>
     </div>
 </template>
@@ -44,7 +48,7 @@ export default defineComponent({
         return {
             users: [],
             user: {},
-            show: true,
+            show: false,
         };
     },
     created() {
@@ -63,17 +67,16 @@ export default defineComponent({
                 this.users.push(user);
             });
         },
-        displayInfo(user: object) {
-            console.log('click');
+        displayModal(user: object) {
             this.user = user;
-            console.log(user);
+            this.show = true;
+
+            console.log(this.show);
         },
-        openModalExample() {},
-        confirm() {
-            this.show = false;
-        },
-        cancel(close) {
-            close();
+        toggleModal(isModalOpen) {
+            console.log('TOGGLE MODAL:', isModalOpen);
+            isModalOpen = this.show = !this.show;
+            return isModalOpen;
         },
     },
 });

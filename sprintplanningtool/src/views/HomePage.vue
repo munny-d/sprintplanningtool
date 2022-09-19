@@ -60,7 +60,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 #home-title {
     margin: 3rem;
     text-align: center;

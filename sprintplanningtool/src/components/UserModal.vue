@@ -6,21 +6,18 @@
             classes="modal-container"
             content-class="modal-content"
         >
-            <button class="modal__close" @click="showModal = false">
-                <mdi-close></mdi-close>
-            </button>
-            <span class="modal__title">Hello, vue-final-modal</span>
+            <button class="modal__close" @click="onClose">x</button>
+            <span class="modal__title">User Information</span>
             <div class="modal__content">
-                <p v-for="i in 5" :key="i">
-                    Vue Final Modal is a renderless, stackable, detachable and
-                    lightweight modal component.
+                <p>
+                    {{ user }}
                 </p>
             </div>
             <div class="modal__action">
-                <v-button highlight @click="showConfirmModal = true"
-                    >confirm</v-button
+                <b-button highlight @click="showConfirmModal = true"
+                    >confirm</b-button
                 >
-                <v-button @click="showModal = false">cancel</v-button>
+                <b-button @click="onClose">cancel</b-button>
             </div>
         </vue-final-modal>
 
@@ -31,30 +28,47 @@
             content-class="modal-content"
         >
             <button class="modal__close" @click="showConfirmModal = false">
-                <mdi-close></mdi-close>
+                x
             </button>
             <span class="modal__title">Confirm</span>
             <div class="modal__content">Confirm to submit.</div>
             <div class="modal__action">
-                <v-button @click="confirm">confirm</v-button>
-                <v-button @click="showConfirmModal = false">cancel</v-button>
+                <b-button variant="primary" @click="confirm">confirm</b-button>
+                <b-button variant="danger" @click="showConfirmModal = false"
+                    >cancel</b-button
+                >
             </div>
         </vue-final-modal>
-
-        <v-button @click="showModal = true">Open modal</v-button>
     </div>
 </template>
 
-<script>
+<script lang="ts">
+interface Data {
+    showModal: boolean;
+    showConfirmModal: boolean;
+}
+
 export default {
-    data: () => ({
-        showModal: false,
-        showConfirmModal: false,
-    }),
+    data(): Data {
+        return {
+            showModal: true,
+            showConfirmModal: false,
+        };
+    },
+    props: {
+        user: {},
+    },
     methods: {
         confirm() {
+            // @ts-ignore
             this.showConfirmModal = false;
+            // @ts-ignore
             this.showModal = false;
+
+            this.$emit('isModalOpen', false);
+        },
+        onClose() {
+            this.$emit('isModalOpen', false);
         },
     },
 };
@@ -104,5 +118,9 @@ export default {
 .dark-mode div::v-deep .modal-content {
     border-color: #2d3748;
     background-color: #1a202c;
+}
+
+.btn {
+    margin: 0.5rem;
 }
 </style>
