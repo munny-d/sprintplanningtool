@@ -58,7 +58,7 @@ async function getAll() {
     return handleResponse(response);
 }
 
-async function getById(id: string) {
+async function getById(id: number) {
     const requestOptions = {
         method: 'GET',
         headers: authHeader() as HeadersInit,
@@ -83,7 +83,7 @@ async function update(user: any) {
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
-async function _delete(id: string) {
+async function _delete(id: number) {
     const requestOptions = {
         method: 'DELETE',
         headers: authHeader() as HeadersInit,

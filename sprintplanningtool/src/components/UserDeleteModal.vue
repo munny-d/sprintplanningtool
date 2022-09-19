@@ -1,27 +1,33 @@
 <template>
     <div>
-        <!-- First modal -->
+        <!-- Main modal -->
         <vue-final-modal
             v-model="showModal"
             classes="modal-container"
             content-class="modal-content"
         >
-            <button class="modal__close" @click="onClose">x</button>
-            <span class="modal__title">User Information</span>
+            <button variant="link" class="modal__close" @click="onClose">
+                x
+            </button>
+            <span class="modal__title">The following user will be deleted</span>
             <div class="modal__content">
                 <p>
-                    {{ user }}
+                    User id: <b> {{ user.id }} </b> Username:
+                    <b> {{ user.username }} </b>
                 </p>
             </div>
             <div class="modal__action">
-                <b-button highlight @click="showConfirmModal = true"
+                <b-button
+                    variant="outline-danger"
+                    highlight
+                    @click="showConfirmModal = true"
                     >confirm</b-button
                 >
-                <b-button @click="onClose">cancel</b-button>
+                <b-button variant="light" @click="onClose">cancel</b-button>
             </div>
         </vue-final-modal>
 
-        <!-- Second modal -->
+        <!-- Confirm modal -->
         <vue-final-modal
             v-model="showConfirmModal"
             classes="modal-container"
@@ -30,11 +36,17 @@
             <button class="modal__close" @click="showConfirmModal = false">
                 x
             </button>
-            <span class="modal__title">Confirm</span>
-            <div class="modal__content">Confirm to submit.</div>
+            <span class="modal__title">FINAL WARNING</span>
+            <div class="modal__content">
+                Please click confirm to delete <b> {{ user.username }}. </b>
+                <br />
+                <b> Warning:</b> this action cannot be undone.
+            </div>
             <div class="modal__action">
-                <b-button variant="primary" @click="confirm">confirm</b-button>
-                <b-button variant="danger" @click="showConfirmModal = false"
+                <b-button variant="outline-danger" @click="confirmDelete"
+                    >delete</b-button
+                >
+                <b-button variant="primary" @click="showConfirmModal = false"
                     >cancel</b-button
                 >
             </div>
@@ -43,6 +55,9 @@
 </template>
 
 <script lang="ts">
+import { userService } from '../services/user-service';
+import router from '../router';
+
 interface Data {
     showModal: boolean;
     showConfirmModal: boolean;
@@ -59,15 +74,19 @@ export default {
         user: {},
     },
     methods: {
-        confirm() {
+        confirmDelete() {
             // @ts-ignore
             this.showConfirmModal = false;
             // @ts-ignore
             this.showModal = false;
-
+            // @ts-ignore
+            this.$emit('userId', this.user.id);
             this.$emit('isModalOpen', false);
+            // userService.delete(this.user.id);
+            // @ts-ignore
         },
         onClose() {
+            // @ts-ignore
             this.$emit('isModalOpen', false);
         },
     },

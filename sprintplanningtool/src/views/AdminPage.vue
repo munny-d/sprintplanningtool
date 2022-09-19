@@ -10,24 +10,39 @@
                 </thead>
                 <tbody>
                     <tr v-for="user in users" :key="user.id">
-                        <td>
+                        <td id="td-text">
                             {{ user.username }}
-
-                            <button id="edit-btn" @click="displayModal(user)">
-                                edit
-                            </button>
+                            <div class="btn-position">
+                                <b-button
+                                    variant="primary"
+                                    size="sm"
+                                    id="edit-btn"
+                                    @click="displayEditModal(user)"
+                                >
+                                    edit
+                                </b-button>
+                                <b-button
+                                    variant="danger"
+                                    size="sm"
+                                    id="delete-btn"
+                                    @click="displayDeleteModal(user)"
+                                >
+                                    delete
+                                </b-button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <div>
-            <user-modal
+            <user-delete-modal
                 :user="user"
                 :showModal="show"
                 v-if="show"
                 @isModalOpen="toggleModal"
-            ></user-modal>
+                @userId="triggerDeleteUser"
+            ></user-delete-modal>
         </div>
     </div>
 </template>
@@ -35,7 +50,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { userService } from '../services/user-service';
-import UserModal from '../components/UserModal.vue';
+import UserDeleteModal from '../components/UserDeleteModal.vue';
+import router from '../router';
 
 interface Data {
     users: [];
@@ -55,7 +71,10 @@ export default defineComponent({
         this.populateTable();
     },
     components: {
-        UserModal,
+        UserDeleteModal,
+    },
+    watch: {
+        users(newUsers, oldUsers) {},
     },
     methods: {
         async populateTable() {
@@ -64,19 +83,55 @@ export default defineComponent({
                 .catch((error) => console.log(error));
 
             users.forEach((user: any) => {
+                // @ts-ignore
                 this.users.push(user);
             });
         },
-        displayModal(user: object) {
+        displayDeleteModal(user: object) {
             this.user = user;
             this.show = true;
-
-            console.log(this.show);
         },
-        toggleModal(isModalOpen) {
+        displayEditModal(user: object) {
+            // this.user = user;
+            // this.show = true;
+
+            console.log('EDIT BTN CLICKED');
+        },
+        toggleModal(isModalOpen: boolean) {
             console.log('TOGGLE MODAL:', isModalOpen);
             isModalOpen = this.show = !this.show;
             return isModalOpen;
+        },
+        triggerDeleteUser(userId: number) {
+            console.log('user id in parent', userId);
+            const loggedInUser = JSON.parse(localStorage.getItem('user'));
+
+            console.log('ID OF LOGGED IN', loggedInUser.id);
+
+            // If user is deleting their own account, logout and navigate back to
+            if (userId === loggedInUser.id) {
+                console.log('IM ABOUT TO DELETE MAHSELF');
+
+                userService
+                    .delete(userId)
+                    .then(() => userService.logout())
+                    .then(() => router.push('/'))
+                    .catch((e) => {
+                        console.log('---Error while deleting self', e);
+                    });
+            } else {
+                userService
+                    .delete(userId)
+                    .then(() => {
+                        console.log('user is deleted...');
+                        console.log('repopulating users...');
+                        console.log('current set of users: ', this.users);
+                        location.reload();
+                    })
+                    .catch((e) => {
+                        console.log('Error during deletion: ', e);
+                    });
+            }
         },
     },
 });
@@ -93,10 +148,17 @@ export default defineComponent({
 }
 
 #td-text {
-    text-align: center;
+    margin: 2px;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    font-size: 40px;
 }
 
-#edit-btn {
-    margin-left: 10rem;
+#delete-btn {
+    margin-left: 1rem;
+}
+
+.btn-position {
+    margin: 2px;
 }
 </style>
