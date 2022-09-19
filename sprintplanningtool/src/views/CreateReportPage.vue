@@ -242,8 +242,8 @@ interface Data {
     absentDays: number;
     workDays: number;
     capacity: number;
-    newSP: number;
-    carriedSP: number;
+    newSP: string; // this has to be a string since it's an input.
+    carriedSP: string; // this has to be a string since it's an input.
     totalSP: number;
     sprintGoal: string;
     submitted: boolean;
@@ -276,8 +276,8 @@ export default defineComponent({
             absentDays: 0,
             workDays: 0,
             capacity: 0,
-            newSP: 0,
-            carriedSP: 0,
+            newSP: '0',
+            carriedSP: '0',
             totalSP: 0,
             sprintGoal: '',
             submitted: false,
@@ -391,7 +391,7 @@ export default defineComponent({
             this.capacity = 100 - absentPercentage;
         },
         calculateTotalSP() {
-            this.totalSP = this.newSP + this.carriedSP;
+            this.totalSP = parseInt(this.newSP) + parseInt(this.carriedSP);
         },
         padToTwoDigits(num: number) {
             return num.toString().padStart(2, '0');
