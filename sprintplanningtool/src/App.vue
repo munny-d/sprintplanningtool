@@ -15,6 +15,7 @@ export default defineComponent({
 </script>
 
 <style>
+/* All shared styles are created here */
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -51,5 +52,38 @@ img {
     margin-right: auto;
     width: 200px;
     margin-bottom: 20px;
+}
+
+.form-style {
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+        rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    width: 50%;
+    padding: 50px;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1rem;
+}
+
+.form-btn {
+    margin: 0.5rem;
+}
+
+.error,
+.invalid-field {
+    color: red;
+    font-size: small;
+    margin: 0;
+    display: block;
+}
+
+.success {
+    color: green;
+    font-size: small;
+}
+
+ul {
+    list-style: none;
 }
 </style>

@@ -25,7 +25,7 @@
                 </table>
                 <li><b>Team size: </b> {{ report.teamSize }}</li>
                 <li><b>Work Days: </b>{{ report.workDays }}</li>
-                <li><b>Capacity: </b> {{ report.capacity }}</li>
+                <li><b>Capacity: </b> {{ report.capacity }}%</li>
                 <li><b>New SP: </b> {{ report.newSP }}</li>
                 <li><b>Carried SP: </b> {{ report.carriedSP }}</li>
                 <li><b>Total SP: </b> {{ report.totalSP }}</li>
@@ -41,27 +41,6 @@
 import { defineComponent } from 'vue';
 import { reportService } from '../services/report-service';
 import { dateHelper } from '../helpers/date-helper';
-
-// interface Member {
-//     id: number;
-//     username: string;
-// }
-
-interface Report {
-    sprintStartDate: Date;
-    sprintEndDate: Date;
-    teamMembers: Member[];
-    teamSize: number;
-    absentDays: number;
-    workDays: number;
-    capacity: number;
-    newSP: number;
-    carriedSP: number;
-    totalSP: number;
-    sprintGoal: string;
-    createdByUser: any;
-    createdDate: Date;
-}
 
 export default defineComponent({
     data() {
@@ -91,7 +70,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .report-style {
     background-color: whitesmoke;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
@@ -123,7 +102,7 @@ a:hover {
 
 li {
     text-align: -webkit-auto;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 

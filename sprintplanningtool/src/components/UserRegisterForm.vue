@@ -4,6 +4,7 @@
         ref="form"
         @submit="onSubmit"
         :validation-schema="schema"
+        class="form-style"
     >
         <ul>
             <ErrorMessage name="username" class="invalid-field" />
@@ -58,12 +59,17 @@
                 login.
             </p>
             <li>
-                <button class="btn form-btn" type="submit">
+                <b-button variant="primary" class="form-btn" type="submit">
                     Create Account
-                </button>
-                <button class="btn form-btn" type="button" @click="onClose">
+                </b-button>
+                <b-button
+                    variant="danger"
+                    class="form-btn"
+                    type="button"
+                    @click="onClose"
+                >
                     Close
-                </button>
+                </b-button>
             </li>
         </ul>
     </Form>
@@ -161,17 +167,9 @@ export default defineComponent({
 });
 </script>
 
-<style>
-.error,
-.invalid-field {
-    color: red;
-    font-size: small;
-    margin: 0;
-    display: block;
-}
-
-.success {
-    color: green;
-    font-size: small;
+<style scoped>
+label {
+    margin: 0.5rem;
+    text-align: start;
 }
 </style>
