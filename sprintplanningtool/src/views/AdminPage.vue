@@ -34,7 +34,7 @@
                     </table>
                 </div>
             </b-accordion-item>
-            <b-accordion-item title="Reports">
+            <b-accordion-item class="acc-header" title="Reports">
                 <div class="container">
                     <table id="team-table">
                         <tbody>
@@ -129,6 +129,7 @@ import UserEditModal from '../components/UserEditModal.vue';
 import ReportDeleteModal from '../components/ReportDeleteModal.vue';
 import ReportViewModal from '../components/ReportViewModal.vue';
 import router from '../router';
+import { dateHelper } from '../helpers/date-helper';
 
 interface Data {
     users: [];
@@ -183,6 +184,15 @@ export default defineComponent({
             });
 
             reports.forEach((report: any) => {
+                // Format ISO date to display as dd-mm-yyyy
+                report.sprintStartDate = dateHelper.formatDate(
+                    report.sprintStartDate
+                );
+                report.sprintEndDate = dateHelper.formatDate(
+                    report.sprintEndDate
+                );
+                report.createdDate = dateHelper.formatDate(report.createdDate);
+
                 this.reports.push(report);
             });
         },
@@ -321,8 +331,22 @@ li {
     margin-top: 2rem;
 }
 
-.accordion-button:not(.collapsed) {
-    background: blueviolet;
-    color: white;
+table {
+    width: 70%;
+    border-collapse: collapse;
+    border-width: 2px;
+    border-style: solid;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    background-color: rgb(239, 239, 239);
+    text-align: center;
+}
+
+table td,
+table th {
+    border-width: 2px;
+    border-color: rgb(70, 59, 76);
+    border-style: solid;
+    padding: 3px;
 }
 </style>

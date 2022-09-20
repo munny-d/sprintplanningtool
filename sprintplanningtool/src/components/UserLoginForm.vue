@@ -135,10 +135,6 @@ export default defineComponent({
     display: block;
 }
 
-.form-btn {
-    margin: 0.5rem;
-}
-
 label {
     margin: 1rem;
 }

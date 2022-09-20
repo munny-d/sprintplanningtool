@@ -8,45 +8,44 @@
         >
             <span class="modal__title">View Report Information</span>
             <div class="modal__content">
-                <p>
-                    report id: <b> {{ report }}</b>
-                </p>
+                <li><b>Start date: </b>{{ report.sprintStartDate }}</li>
+                <li><b>End date: </b> {{ report.sprintEndDate }}</li>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Team member(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="member in report.teamMembers"
+                            :key="member.id"
+                        >
+                            <td>
+                                {{ member.username }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <li><b>Team size: </b> {{ report.teamSize }}</li>
+                <li><b>Work Days: </b>{{ report.workDays }}</li>
+                <li><b>Capacity: </b> {{ report.capacity }}%</li>
+                <li><b>New SP: </b> {{ report.newSP }}</li>
+                <li><b>Carried SP: </b> {{ report.carriedSP }}</li>
+                <li><b>Total SP: </b> {{ report.totalSP }}</li>
+
+                <li><b> Sprint Goal: </b> {{ report.sprintGoal }}</li>
+                <li><b> Created Date: </b>{{ report.createdDate }}</li>
 
                 <div class="modal__action">
                     <b-button
-                        variant="outline-success"
-                        highlight
-                        @click="showConfirmModal = true"
-                        >confirm</b-button
-                    >
-                    <b-button variant="outline-secondary" @click="onClose"
-                        >cancel</b-button
+                        variant="outline-primary"
+                        @click="onClose"
+                        title="Click here to finish viewing"
+                        >Done</b-button
                     >
                 </div>
             </div>
-        </vue-final-modal>
-
-        <!-- Confirm modal -->
-        <vue-final-modal
-            v-model="showConfirmModal"
-            classes="modal-container"
-            content-class="modal-content"
-        >
-            <span class="modal__title">PLEASE CONFIRM THE CHANGES</span>
-            <div class="modal__content">
-                Please click confirm to update the report details.
-            </div>
-            <div class="modal__action">
-                <b-button variant="outline-success">confirm</b-button>
-                <b-button
-                    variant="outline-danger"
-                    @click="showConfirmModal = false"
-                    >cancel</b-button
-                >
-            </div>
-            <p class="error">
-                If there is no changes required, please click cancel.
-            </p>
         </vue-final-modal>
     </div>
 </template>
@@ -141,6 +140,26 @@ ul {
 }
 
 li {
-    margin: 0.5rem;
+    list-style: none;
+    display: flex;
+    margin: 1rem;
+    padding-left: 10rem;
+    padding-right: 10rem;
+    justify-content: space-between;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-width: 2px;
+    border-style: solid;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    background-color: rgb(239, 239, 239);
+    text-align: center;
+}
+
+b {
+    margin-right: 10px;
 }
 </style>
