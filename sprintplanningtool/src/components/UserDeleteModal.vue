@@ -6,9 +6,6 @@
             classes="modal-container"
             content-class="modal-content"
         >
-            <button variant="link" class="modal__close" @click="onClose">
-                x
-            </button>
             <span class="modal__title">The following user will be deleted</span>
             <div class="modal__content">
                 <p>
@@ -33,9 +30,6 @@
             classes="modal-container"
             content-class="modal-content"
         >
-            <button class="modal__close" @click="showConfirmModal = false">
-                x
-            </button>
             <span class="modal__title">FINAL WARNING</span>
             <div class="modal__content">
                 Please click confirm to delete <b> {{ user.username }}. </b>
@@ -55,9 +49,6 @@
 </template>
 
 <script lang="ts">
-import { userService } from '../services/user-service';
-import router from '../router';
-
 interface Data {
     showModal: boolean;
     showConfirmModal: boolean;
@@ -109,6 +100,7 @@ export default {
     border: 1px solid #e2e8f0;
     border-radius: 0.25rem;
     background: #fff;
+    width: 50%;
 }
 .modal__title {
     margin: 0 2rem 0.5rem 0;
