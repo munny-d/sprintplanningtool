@@ -2,7 +2,7 @@
     <div id="report-pg">
         <header>
             <a @click="onLogout">Logout</a>
-            <h1>Create a Sprint Planning Report</h1>
+            <h1>Sprint Planning Report</h1>
         </header>
 
         <section>
@@ -99,7 +99,9 @@
                     </table>
 
                     <li>
-                        <label for="">Team Size: </label>
+                        <label class="label-space" for="team-size"
+                            >Team Size:
+                        </label>
                         <Field
                             id="team-size"
                             class="number-input"
@@ -107,12 +109,13 @@
                             type="number"
                             disabled
                             v-model="teamSize"
+                            title="This field is automatically calculated."
                         >
                         </Field>
                     </li>
 
                     <li>
-                        <label for="absent-days" class="label-inline"
+                        <label class="label-space" for="absent-days"
                             >Planned number of holiday(s)</label
                         >
                         <Field
@@ -125,7 +128,7 @@
                             @change="calculateCapacity"
                             class="number-input"
                         />
-                        <label for="work-days" class="label-inline"
+                        <label class="label-space" for="work-days"
                             >Total number of work day(s):
                         </label>
                         <Field
@@ -137,10 +140,11 @@
                             disabled
                             v-model="workDays"
                             class="number-input"
+                            title="This field is automatically calculated."
                         >
                         </Field>
                         <div id="capacity-area">
-                            <label class="label-inline"
+                            <label class="label-space"
                                 >Team Capacity (%):
                             </label>
                             <h4>{{ Math.round(capacity) }}%</h4>
@@ -437,6 +441,14 @@ export default defineComponent({
 <style scoped>
 #report-pg {
     background-color: whitesmoke;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+        rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    width: fit-content;
+    padding: 50px;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 a {
@@ -445,6 +457,10 @@ a {
     top: 0;
     right: 0;
     margin: 2rem;
+}
+
+h1 {
+    text-decoration: underline;
 }
 
 a:hover {
@@ -528,6 +544,12 @@ input {
     text-align: center;
 }
 
+#team-size,
+#work-days {
+    background-color: lightgray;
+    cursor: not-allowed;
+}
+
 table td,
 table th {
     border-width: 2px;
@@ -547,5 +569,10 @@ table th {
 .form-btn {
     margin-left: 10px;
     margin-right: 10px;
+}
+
+.label-space {
+    margin-bottom: 0.5rem;
+    margin-top: 0.3rem;
 }
 </style>
