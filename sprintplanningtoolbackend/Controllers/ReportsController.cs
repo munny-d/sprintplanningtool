@@ -48,6 +48,11 @@ namespace sprintplanningtoolbackend.Controllers
         public IActionResult GetAllReports()
         {
             var reports = _reportService.GetAllReports();
+
+            foreach (var report in reports)
+            {
+                _reportService.AddTeamMembersToReport(report.Id);
+            }
             return Ok(reports);
         }
 

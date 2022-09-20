@@ -18,6 +18,14 @@
             options.UseSqlServer(Configuration.GetConnectionString("SPTDatabase"));
         }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SprintReport>()
+                .HasMany(t => t.TeamMembers)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+        }
+
         public DbSet<User> Users { get; set; }
         public DbSet<SprintReport> SprintReports { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
