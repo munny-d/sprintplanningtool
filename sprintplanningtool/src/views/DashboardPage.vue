@@ -2,6 +2,10 @@
     <div>
         <!-- Create navbar and import here -->
         <h1>Sprint Report</h1>
+        <br />
+        <b-button variant="outline-dark" @click="sendEmail"
+            >Click to email</b-button
+        >
         <div class="report-style">
             <ul>
                 <li><b>Start date: </b>{{ report.sprintStartDate }}</li>
@@ -33,10 +37,9 @@
                 <li><b> Sprint Goal: </b> {{ report.sprintGoal }}</li>
                 <li><b> Created Date: </b>{{ report.createdDate }}</li>
             </ul>
+            <hr />
         </div>
-        <b-button variant="outline-dark" @click="sendEmail"
-            >Click to email</b-button
-        >
+        <hr />
     </div>
 </template>
 

@@ -1,27 +1,55 @@
 <template>
     <b-nav pills>
-        <b-nav-item :active="$route.name == 'Home'" href="/">Home</b-nav-item>
-        <b-nav-item :active="$route.name == 'Dashboard'" href="/create-report"
+        <b-nav-item
+            v-if="displayBtn"
+            :active="$route.name == 'Create-Report'"
+            href="/create-report"
             >Create Report</b-nav-item
         >
-        <b-nav-item :active="$route.name == 'Admin'" href="/admin"
+        <b-nav-item
+            :active="$route.name == 'Dashboard'"
+            href="/dashboard"
+            v-if="displayBtn"
+            >View latest report</b-nav-item
+        >
+        <b-nav-item
+            :active="$route.name == 'Admin'"
+            href="/admin"
+            v-if="isAdmin"
             >Admin</b-nav-item
         >
-        <b-nav-item @click="onLogout">Logout</b-nav-item>
+        <b-nav-item v-if="displayBtn" @click="onLogout">Logout</b-nav-item>
     </b-nav>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { userService } from '../services/user-service';
-import router from '../router';
 
 export default defineComponent({
     name: 'NavBar',
+    data() {
+        return {
+            isAdmin: false,
+            displayBtn: false,
+        };
+    },
+    watch: {
+        $route() {
+            console.log('WATCH');
+
+            // @ts-ignore
+            const user = JSON.parse(localStorage.getItem('user'));
+
+            if (user) {
+                user ? (this.displayBtn = true) : (this.displayBtn = false);
+                user.isAdmin ? (this.isAdmin = true) : (this.isAdmin = false);
+            }
+        },
+    },
     methods: {
         onLogout() {
             userService.logout();
-            router.push({ path: '/' });
         },
     },
 });

@@ -1,8 +1,10 @@
 <template>
-    <nav-bar></nav-bar>
-    <img alt="Currys logo" src="./assets/logo.png" />
-    <hr />
-    <router-view />
+    <div>
+        <nav-bar></nav-bar>
+        <img alt="Currys logo" src="./assets/logo.png" />
+        <hr />
+        <router-view />
+    </div>
 </template>
 
 <script lang="ts">
@@ -53,7 +55,6 @@ img {
     margin-right: auto;
     width: 200px;
     margin-bottom: 20px;
-    margin-top: 1rem;
 }
 
 .form-style {

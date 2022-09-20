@@ -11,13 +11,13 @@
         </b-button>
 
         <!-- Register Form -->
-        <UserRegisterForm
+        <user-register-form
             v-if="isRegisterFormOpen"
             @isFormOpen="toggleRegisterForm"
         />
 
         <!-- Login Form -->
-        <UserLoginForm v-if="isLoginFormOpen" @isFormOpen="toggleLoginForm" />
+        <user-login-form v-if="isLoginFormOpen" @isFormOpen="toggleLoginForm" />
     </div>
 </template>
 

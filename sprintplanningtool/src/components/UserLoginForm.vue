@@ -107,6 +107,7 @@ export default defineComponent({
                 await userService
                     .login(username, password)
                     .then(() => {
+                        this.$emit('isLoggedIn', true);
                         router.push({ path: '/create-report' });
                     })
                     .catch((error) => {

@@ -33,6 +33,19 @@
                         </tbody>
                     </table>
                 </div>
+                <hr />
+                <b-button
+                    variant="outline-primary"
+                    title="Click to create a new user"
+                    @click="toggleRegisterForm"
+                    >{{ createUserBtnTxt }}</b-button
+                >
+
+                <!-- Register Form -->
+                <user-register-form
+                    v-if="isRegisterFormOpen"
+                    @isFormOpen="toggleRegisterForm"
+                />
             </b-accordion-item>
             <b-accordion-item class="acc-header" title="Reports">
                 <div class="container">
@@ -73,6 +86,7 @@
                 </div>
             </b-accordion-item>
         </b-accordion>
+        <div></div>
         <div>
             <user-delete-modal
                 :user="user"
@@ -110,8 +124,8 @@ import { reportService } from '../services/report-service';
 import UserDeleteModal from '../components/UserDeleteModal.vue';
 import UserEditModal from '../components/UserEditModal.vue';
 import ReportModal from '../components/ReportModal.vue';
-import router from '../router';
 import { dateHelper } from '../helpers/date-helper';
+import UserRegisterForm from '../components/UserRegisterForm.vue';
 
 interface Data {
     users: [];
@@ -122,6 +136,8 @@ interface Data {
     showEditModal: boolean;
     showReportModal: boolean;
     errorMsg: string;
+    isRegisterFormOpen: boolean;
+    createUserBtnTxt: string;
 }
 
 export default defineComponent({
@@ -135,6 +151,8 @@ export default defineComponent({
             showEditModal: false,
             showReportModal: false,
             errorMsg: '',
+            isRegisterFormOpen: false,
+            createUserBtnTxt: 'Register new user',
         };
     },
     created() {
@@ -145,6 +163,7 @@ export default defineComponent({
         UserDeleteModal,
         UserEditModal,
         ReportModal,
+        UserRegisterForm,
     },
     methods: {
         async fetchUsers() {
@@ -161,8 +180,6 @@ export default defineComponent({
             const reports = await reportService.getAll().catch((e) => {
                 console.log('Error fetching reports: ', e);
             });
-
-            console.log('REPORT: ', reports);
 
             reports.forEach((report: any) => {
                 // Format ISO date to display as dd-mm-yyyy
@@ -190,6 +207,13 @@ export default defineComponent({
             this.report = report;
             this.showReportModal = true;
         },
+        toggleRegisterForm(isFormOpen: boolean) {
+            isFormOpen = this.isRegisterFormOpen = !this.isRegisterFormOpen;
+            isFormOpen
+                ? (this.createUserBtnTxt = 'Close register form')
+                : (this.createUserBtnTxt = 'Register new user');
+            return isFormOpen;
+        },
         toggleDeleteModal(isModalOpen: boolean) {
             isModalOpen = this.showDeleteModal = !this.showDeleteModal;
             return isModalOpen;
@@ -216,7 +240,6 @@ export default defineComponent({
                 userService
                     .update(user)
                     .then(() => userService.logout())
-                    .then(() => router.push('/'))
                     .catch((e) => {
                         console.log('---Error while updating self', e);
                         this.errorMsg = `Error: ${e}`;
@@ -243,7 +266,6 @@ export default defineComponent({
                 userService
                     .delete(userId)
                     .then(() => userService.logout())
-                    .then(() => router.push('/'))
                     .catch((e) => {
                         console.log('---Error while deleting self', e);
                         this.errorMsg = `Error: ${e}`;
@@ -263,9 +285,6 @@ export default defineComponent({
         },
         triggerDeleteReport(repId: number) {
             this.errorMsg = '';
-
-            console.log('TRIGGERING DELETE...');
-            console.log('REPORT ID: ', repId);
 
             reportService
                 .delete(repId)
@@ -337,5 +356,10 @@ table th {
     border-color: rgb(70, 59, 76);
     border-style: solid;
     padding: 3px;
+}
+
+.form-style {
+    width: fit-content;
+    margin-bottom: 0.5rem;
 }
 </style>

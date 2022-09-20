@@ -321,7 +321,6 @@ export default defineComponent({
     methods: {
         async onLogout(): Promise<void> {
             userService.logout();
-            router.push({ path: '/' });
         },
         async getUsers() {
             const users = await userService
