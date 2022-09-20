@@ -1,7 +1,6 @@
 <template>
     <div id="report-pg">
         <header>
-            <a @click="onLogout">Logout</a>
             <h1>Sprint Planning Report</h1>
         </header>
 

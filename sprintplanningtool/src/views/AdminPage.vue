@@ -57,22 +57,13 @@
                                     </ul>
                                     <div class="btn-position">
                                         <b-button
-                                            variant="primary"
+                                            variant="outline-primary"
                                             size="sm"
                                             id="delete-btn"
-                                            @click="displayRepViewModal(report)"
+                                            @click="displayReportModal(report)"
+                                            title="Click to open more details"
                                         >
-                                            view
-                                        </b-button>
-                                        <b-button
-                                            variant="danger"
-                                            size="sm"
-                                            id="delete-btn"
-                                            @click="
-                                                displayRepDeleteModal(report)
-                                            "
-                                        >
-                                            delete
+                                            View
                                         </b-button>
                                     </div>
                                 </td>
@@ -101,21 +92,13 @@
             ></user-edit-modal>
         </div>
         <div>
-            <report-delete-modal
+            <report-modal
                 :report="report"
-                :showModal="showRepDeleteModal"
-                v-if="showRepDeleteModal"
-                @isModalOpen="toggleRepDeleteModal"
-                @repId="triggerDeleteRep"
-            ></report-delete-modal>
-        </div>
-        <div>
-            <report-view-modal
-                :report="report"
-                :showModal="showRepViewModal"
-                v-if="showRepViewModal"
-                @isModalOpen="toggleRepViewModal"
-            ></report-view-modal>
+                :showModal="showReportModal"
+                v-if="showReportModal"
+                @isModalOpen="toggleReportModal"
+                @repId="triggerDeleteReport"
+            ></report-modal>
         </div>
     </div>
 </template>
@@ -126,8 +109,7 @@ import { userService } from '../services/user-service';
 import { reportService } from '../services/report-service';
 import UserDeleteModal from '../components/UserDeleteModal.vue';
 import UserEditModal from '../components/UserEditModal.vue';
-import ReportDeleteModal from '../components/ReportDeleteModal.vue';
-import ReportViewModal from '../components/ReportViewModal.vue';
+import ReportModal from '../components/ReportModal.vue';
 import router from '../router';
 import { dateHelper } from '../helpers/date-helper';
 
@@ -138,8 +120,7 @@ interface Data {
     report: object;
     showDeleteModal: boolean;
     showEditModal: boolean;
-    showRepDeleteModal: boolean;
-    showRepViewModal: boolean;
+    showReportModal: boolean;
     errorMsg: string;
 }
 
@@ -152,8 +133,7 @@ export default defineComponent({
             report: {},
             showDeleteModal: false,
             showEditModal: false,
-            showRepDeleteModal: false,
-            showRepViewModal: false,
+            showReportModal: false,
             errorMsg: '',
         };
     },
@@ -164,8 +144,7 @@ export default defineComponent({
     components: {
         UserDeleteModal,
         UserEditModal,
-        ReportDeleteModal,
-        ReportViewModal,
+        ReportModal,
     },
     methods: {
         async fetchUsers() {
@@ -183,6 +162,8 @@ export default defineComponent({
                 console.log('Error fetching reports: ', e);
             });
 
+            console.log('REPORT: ', reports);
+
             reports.forEach((report: any) => {
                 // Format ISO date to display as dd-mm-yyyy
                 report.sprintStartDate = dateHelper.formatDate(
@@ -193,6 +174,7 @@ export default defineComponent({
                 );
                 report.createdDate = dateHelper.formatDate(report.createdDate);
 
+                // @ts-ignore
                 this.reports.push(report);
             });
         },
@@ -204,13 +186,9 @@ export default defineComponent({
             this.user = user;
             this.showEditModal = true;
         },
-        displayRepDeleteModal(report: object) {
+        displayReportModal(report: object) {
             this.report = report;
-            this.showRepDeleteModal = true;
-        },
-        displayRepViewModal(report: object) {
-            this.report = report;
-            this.showRepViewModal = true;
+            this.showReportModal = true;
         },
         toggleDeleteModal(isModalOpen: boolean) {
             isModalOpen = this.showDeleteModal = !this.showDeleteModal;
@@ -220,16 +198,9 @@ export default defineComponent({
             isModalOpen = this.showEditModal = !this.showEditModal;
             return isModalOpen;
         },
-        toggleRepDeleteModal(isModalOpen: boolean) {
-            isModalOpen = this.showRepDeleteModal = !this.showRepDeleteModal;
+        toggleReportModal(isModalOpen: boolean) {
+            isModalOpen = this.showReportModal = !this.showReportModal;
             return isModalOpen;
-        },
-        toggleRepViewModal(isModalOpen: boolean) {
-            isModalOpen = this.showRepViewModal = !this.showRepViewModal;
-            return isModalOpen;
-        },
-        triggerDeleteRep() {
-            console.log('delete rep triggered');
         },
         triggerEditUser(user: any) {
             // @ts-ignore
@@ -263,6 +234,7 @@ export default defineComponent({
             }
         },
         triggerDeleteUser(userId: number) {
+            // @ts-ignore
             const loggedInUser = JSON.parse(localStorage.getItem('user'));
             this.errorMsg = '';
 
@@ -280,6 +252,7 @@ export default defineComponent({
                 userService
                     .delete(userId)
                     .then(() => {
+                        alert('User has been deleted');
                         location.reload();
                     })
                     .catch((e) => {
@@ -287,6 +260,22 @@ export default defineComponent({
                         this.errorMsg = `Error: ${e}`;
                     });
             }
+        },
+        triggerDeleteReport(repId: number) {
+            this.errorMsg = '';
+
+            console.log('TRIGGERING DELETE...');
+            console.log('REPORT ID: ', repId);
+
+            reportService
+                .delete(repId)
+                .then(() => {
+                    alert('Report has been deleted');
+                    location.reload();
+                })
+                .catch((e) => {
+                    console.log('---Error while deleting report: ', e);
+                });
         },
     },
 });

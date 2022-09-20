@@ -34,6 +34,9 @@
                 <li><b> Created Date: </b>{{ report.createdDate }}</li>
             </ul>
         </div>
+        <b-button variant="outline-dark" @click="sendEmail"
+            >Click to email</b-button
+        >
     </div>
 </template>
 
@@ -66,6 +69,10 @@ export default defineComponent({
             this.report = report;
             return this.report;
         },
+        sendEmail() {
+            console.log('SENDING EMAIL...');
+            console.log('EMAIL SENT...');
+        },
     },
 });
 </script>
@@ -76,49 +83,40 @@ export default defineComponent({
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
         rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
         rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-    width: 50%;
-    padding: 50px;
-    justify-content: center;
+    width: fit-content;
     margin-left: auto;
     margin-right: auto;
     margin-top: 1rem;
+    padding: 0.5rem;
 }
 
-a {
-    cursor: pointer;
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 2rem;
+.btn {
+    margin: 0.5rem;
 }
 
-h1 {
-    text-decoration: underline;
+p {
+    transform: translateX(10px);
 }
 
-a:hover {
-    text-decoration: underline;
+ul {
+    list-style: none;
+    display: grid;
+    justify-content: center;
 }
 
 li {
-    text-align: -webkit-auto;
-    margin-bottom: 1rem;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-}
-
-#end-date-txt {
-    font-weight: lighter;
-}
-
-input #start-date-field {
-    width: initial;
+    list-style: none;
     display: flex;
-    text-align: center !important;
-    cursor: pointer;
+    margin: 1rem;
+    padding-left: 10rem;
+    padding-right: 10rem;
+    justify-content: space-between;
 }
 
 table {
-    width: 100%;
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
     border-collapse: collapse;
     border-width: 2px;
     border-style: solid;

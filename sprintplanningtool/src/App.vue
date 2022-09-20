@@ -1,15 +1,16 @@
 <template>
-    <div id="nav">
-        <img alt="Currys logo" src="./assets/logo.png" />
-        <hr />
-    </div>
+    <nav-bar></nav-bar>
+    <img alt="Currys logo" src="./assets/logo.png" />
+    <hr />
     <router-view />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import NavBar from './components/NavBar.vue';
 
 export default defineComponent({
+    components: { NavBar },
     name: 'App',
 });
 </script>
@@ -52,6 +53,7 @@ img {
     margin-right: auto;
     width: 200px;
     margin-bottom: 20px;
+    margin-top: 1rem;
 }
 
 .form-style {

@@ -68,13 +68,15 @@ export default {
         confirmDelete() {
             // @ts-ignore
             this.showConfirmModal = false;
+
             // @ts-ignore
             this.showModal = false;
+
             // @ts-ignore
             this.$emit('userId', this.user.id);
-            this.$emit('isModalOpen', false);
-            // userService.delete(this.user.id);
+
             // @ts-ignore
+            this.$emit('isModalOpen', false);
         },
         onClose() {
             // @ts-ignore
