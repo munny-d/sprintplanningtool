@@ -28,6 +28,14 @@ jobs:
                 node-version: 16.16.0
             - name: npm install, run, log
               run: |
+                trap logs 1 2 3 6
+
                 npm install
-                npm run build 
-                cd /home/runner/.npm/_logs && cat "$(ls -rt | tail -n1)"
+                npm run
+                npm run build
+
+                logs()
+                {
+                  cd /home/runner/.npm/_logs && cat "$(ls -rt | tail -n1)"
+                }
+                
