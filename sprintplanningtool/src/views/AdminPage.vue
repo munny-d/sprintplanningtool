@@ -33,7 +33,7 @@
                     </table>
                 </div>
             </b-accordion-item>
-            <b-accordion-item title="Reports" @click="fetchReports()">
+            <b-accordion-item title="Reports">
                 <div class="container">
                     <table id="team-table">
                         <tbody>
@@ -128,6 +128,7 @@ export default defineComponent({
     },
     created() {
         this.fetchUsers();
+        this.fetchReports();
     },
     components: {
         UserDeleteModal,
@@ -214,7 +215,6 @@ export default defineComponent({
             }
         },
         async fetchReports() {
-            console.log('FETCH REPORTS TRIGGERED');
             const reports = await reportService.getAll().catch((e) => {
                 console.log('Error fetching reports: ', e);
             });
