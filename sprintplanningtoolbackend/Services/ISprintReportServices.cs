@@ -11,5 +11,7 @@
         IEnumerable<SprintReport> GetAllReports ();
         void DeleteReport(int id);
         IEnumerable<TeamMember> GetTeamMembersFromReport(int id);
+        SprintReport AddTeamMembersToReport(int id);
+
     }
 }

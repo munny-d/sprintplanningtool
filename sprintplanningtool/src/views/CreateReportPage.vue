@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="report-pg">
         <header>
             <a @click="onLogout">Logout</a>
             <h1>Create a Sprint Planning Report</h1>
@@ -15,10 +15,10 @@
             >
                 <ul>
                     <li>
-                        <label for="sprint-date">Start date: </label>
+                        <label for="sprint-date">Start date:</label>
                         <datepicker
                             name="startDate"
-                            id="sprint-date"
+                            id="start-date-field"
                             v-model="sprintStartDate"
                             inputFormat="dd-MM-yyyy"
                             rules="required"
@@ -26,10 +26,8 @@
                     </li>
 
                     <li>
-                        <label for="end-date" class="label-style">
-                            <h4>End date:</h4></label
-                        >
-                        <p class="display-info">
+                        <label for="end-date">End date:</label>
+                        <p id="end-date-field">
                             {{
                                 formatDate(
                                     (sprintEndDate = addWeeks(
@@ -43,31 +41,7 @@
 
                     <li>
                         <ErrorMessage name="teamSize" class="invalid-field" />
-                        <table id="team-table">
-                            <thead>
-                                <tr>
-                                    <th>Team member(s)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="addedMember in teamMembers"
-                                    :key="addedMember.id"
-                                >
-                                    <td>
-                                        {{ addedMember.username }}
-                                        <button
-                                            class="remove-btn"
-                                            @click="removeMember(addedMember)"
-                                        >
-                                            remove
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <label for="team-size">Add team member:</label>
+                        <label for="team-size">Select team member(s):</label>
                         <Field
                             name="teamMembers"
                             as="select"
@@ -86,15 +60,43 @@
                             </option>
                         </Field>
 
-                        <button
+                        <b-button
+                            variant="success"
                             @click="addMember"
-                            class="btn"
                             id="add-btn"
                             type="button"
+                            title="Click to add selected member"
                         >
                             Add member
-                        </button>
+                        </b-button>
                     </li>
+
+                    <table id="team-table">
+                        <thead>
+                            <tr>
+                                <th>Team member(s)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="addedMember in teamMembers"
+                                :key="addedMember.id"
+                            >
+                                <td>
+                                    {{ addedMember.username }}
+                                    <b-button
+                                        variant="outline-danger"
+                                        size="sm"
+                                        id="remove-btn"
+                                        title="Remove member"
+                                        @click="removeMember(addedMember)"
+                                    >
+                                        x
+                                    </b-button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     <li>
                         <label for="">Team Size: </label>
@@ -137,12 +139,16 @@
                             class="number-input"
                         >
                         </Field>
-                        <label class="label-inline">Team Capacity (%): </label>
-                        <h4>{{ Math.round(capacity) }}%</h4>
+                        <div id="capacity-area">
+                            <label class="label-inline"
+                                >Team Capacity (%):
+                            </label>
+                            <h4>{{ Math.round(capacity) }}%</h4>
+                        </div>
                     </li>
 
                     <li>
-                        <h3>Planned Velocity</h3>
+                        <h3 id="velocity-txt">Planned Velocity</h3>
                         <ul class="ul-inline">
                             <li>
                                 Points from new stories:
@@ -176,21 +182,35 @@
                         </h4>
                     </li>
 
-                    <li>
+                    <li class="sg-area">
                         <ErrorMessage name="sprintGoal" class="invalid-field" />
-                        <label for="sprint-goal"><h3>Sprint Goal</h3></label>
+                        <label for="sprint-goal" class="sg-area"
+                            ><h5>Sprint Goal</h5></label
+                        >
                         <Field
                             name="sprintGoal"
                             v-model="sprintGoal"
                             rules="max:50"
+                            id="sg-input"
                         />
                     </li>
 
                     <div class="container">
-                        <button class="btn centre-btn" type="submit">
-                            Create a report
-                        </button>
-                        <button class="btn centre-btn">Clear</button>
+                        <b-button
+                            variant="primary"
+                            class="form-btn"
+                            type="submit"
+                            title="Click to create a report"
+                        >
+                            Submit report
+                        </b-button>
+                        <b-button
+                            class="form-btn"
+                            variant="warning"
+                            title="Reset form"
+                            @click="resetForm"
+                            >Clear</b-button
+                        >
                     </div>
 
                     <li>
@@ -224,8 +244,8 @@ interface ReportReq {
     absentDays: number;
     workDays: number;
     capacity: number;
-    newSP: number;
-    carriedSP: number;
+    newSP: number | string;
+    carriedSP: number | string;
     totalSP: number;
     sprintGoal: string;
     createdByUser: any;
@@ -233,6 +253,7 @@ interface ReportReq {
 
 interface Data {
     schema: object;
+    displayEndDate: string | Date;
     sprintStartDate: Date;
     sprintEndDate: Date | null;
     members: Member[];
@@ -267,6 +288,7 @@ export default defineComponent({
     data(): Data {
         return {
             schema,
+            displayEndDate: '',
             sprintStartDate: new Date(),
             sprintEndDate: null,
             members: [],
@@ -308,7 +330,6 @@ export default defineComponent({
             });
         },
         async onSubmit(): Promise<void> {
-            console.log('Submit clicked');
             this.isLoading = true;
 
             const currentUser = JSON.parse(localStorage.getItem('user') as any);
@@ -406,11 +427,18 @@ export default defineComponent({
         resetTeamMemberId() {
             this.teamMembers.forEach((x) => (x.id = 0));
         },
+        resetForm() {
+            location.reload();
+        },
     },
 });
 </script>
 
-<style>
+<style scoped>
+#report-pg {
+    background-color: whitesmoke;
+}
+
 a {
     cursor: pointer;
     position: absolute;
@@ -423,55 +451,74 @@ a:hover {
     text-decoration: underline;
 }
 
-#sprint-report-form {
-    padding: 2rem;
-    display: flex;
-    font-size: unset;
-    font-weight: bold;
-    width: 500px;
-    display: flex;
-    justify-content: center;
-}
-
-#sprint-report-form input {
-    margin-top: 0.5rem;
-    display: flex;
-}
-
-#sprint-date {
-    width: initial;
-    display: flex;
-    margin-right: auto;
-    margin-top: 0.7rem;
-    text-align: center;
-    cursor: pointer;
-}
-
-#sprint-report-form {
-    font-size: small;
-    font-weight: bold;
-}
-
-#calendar {
-    position: relative;
+ul {
+    width: 70%;
 }
 
 li {
     text-align: -webkit-auto;
+    margin-bottom: 2rem;
 }
 
-.number-input {
-    width: 20%;
+form {
+    display: inline-flex;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.ul-inline {
+    margin-top: 2rem;
+}
+
+#end-date-txt {
+    font-weight: lighter;
+}
+
+input #start-date-field {
+    width: initial;
+    display: flex;
+    text-align: center !important;
+    cursor: pointer;
+}
+
+.v3dp__input_wrapper {
+    text-align: center !important;
+}
+#end-date-field {
+    border: black solid 1px;
+    padding: 3px 5px;
+    background-color: rgb(225, 225, 225);
+    width: 200px;
+    margin-bottom: 2rem;
+    margin-top: 0.5rem;
+    font-weight: lighter;
+    cursor: not-allowed;
+}
+
+.sg-area {
+    display: block;
+}
+
+#sg-input {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+input {
+    width: 100%;
+    text-align: center;
 }
 
 #team-size-select {
-    width: 50%;
+    display: block;
+    width: 70%;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    text-align: center;
 }
 
 #team-table {
-    width: 50%;
+    width: 70%;
     border-collapse: collapse;
     border-width: 2px;
     border-style: solid;
@@ -489,65 +536,16 @@ table th {
     padding: 3px;
 }
 
-.remove-btn {
-    background-color: #f74545;
-    color: white;
-    border: #8b2447 solid 2px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 5rem;
-    padding: 0.2rem 0.3rem;
+#capacity-area {
+    margin-top: 2rem;
 }
 
-.label-style {
-    display: inline;
+#remove-btn {
+    margin-left: 2rem;
 }
 
-.ul-inline {
-    display: -webkit-box;
-}
-
-#total-sp-header {
-    text-align: center;
-    border: black solid 2px;
-    padding: 10px;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#total-sp {
-    font-weight: bold;
-}
-
-.report-btn {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
-.display-info {
-    border: black solid 1px;
-    padding: 5px 55px;
-    background-color: white;
-    width: fit-content;
-    margin-bottom: 2rem;
-}
-
-#add-btn {
-    margin-bottom: 2rem;
-}
-
-.centre-btn {
-    display: table-cell;
-    vertical-align: bottom;
-}
-
-.container {
-    display: table;
-    text-align: center;
-    width: 100%;
-    margin-top: 1.5rem;
+.form-btn {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 </style>

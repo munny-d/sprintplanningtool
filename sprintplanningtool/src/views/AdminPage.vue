@@ -1,6 +1,7 @@
 <template>
     <div>
         <h1>Admin Console</h1>
+        <p class="error">{{ errorMsg }}</p>
         <b-accordion>
             <b-accordion-item title="Users">
                 <div class="container">
@@ -42,9 +43,13 @@
                                     <ul>
                                         <li>Report ID: {{ report.id }}</li>
                                         <li>
-                                            Start: {{ report.sprintStartDate }}
+                                            Start:
+                                            {{ report.sprintStartDate }}
                                         </li>
-                                        <li>End: {{ report.sprintEndDate }}</li>
+                                        <li>
+                                            End:
+                                            {{ report.sprintEndDate }}
+                                        </li>
                                         <li>
                                             Created by:
                                             {{ report.createdByUser }}
@@ -55,7 +60,7 @@
                                             variant="primary"
                                             size="sm"
                                             id="delete-btn"
-                                            @click="displayDeleteModal(user)"
+                                            @click="displayRepViewModal(report)"
                                         >
                                             view
                                         </b-button>
@@ -63,7 +68,9 @@
                                             variant="danger"
                                             size="sm"
                                             id="delete-btn"
-                                            @click="displayDeleteModal(user)"
+                                            @click="
+                                                displayRepDeleteModal(report)
+                                            "
                                         >
                                             delete
                                         </b-button>
@@ -77,7 +84,7 @@
         </b-accordion>
         <div>
             <user-delete-modal
-                :report="report"
+                :user="user"
                 :showModal="showDeleteModal"
                 v-if="showDeleteModal"
                 @isModalOpen="toggleDeleteModal"
@@ -93,6 +100,23 @@
                 @updatedUser="triggerEditUser"
             ></user-edit-modal>
         </div>
+        <div>
+            <report-delete-modal
+                :report="report"
+                :showModal="showRepDeleteModal"
+                v-if="showRepDeleteModal"
+                @isModalOpen="toggleRepDeleteModal"
+                @repId="triggerDeleteRep"
+            ></report-delete-modal>
+        </div>
+        <div>
+            <report-view-modal
+                :report="report"
+                :showModal="showRepViewModal"
+                v-if="showRepViewModal"
+                @isModalOpen="toggleRepViewModal"
+            ></report-view-modal>
+        </div>
     </div>
 </template>
 
@@ -103,7 +127,7 @@ import { reportService } from '../services/report-service';
 import UserDeleteModal from '../components/UserDeleteModal.vue';
 import UserEditModal from '../components/UserEditModal.vue';
 import ReportDeleteModal from '../components/ReportDeleteModal.vue';
-import ReportViewModal from '../components/UserEditModal.vue';
+import ReportViewModal from '../components/ReportViewModal.vue';
 import router from '../router';
 
 interface Data {
@@ -113,6 +137,9 @@ interface Data {
     report: object;
     showDeleteModal: boolean;
     showEditModal: boolean;
+    showRepDeleteModal: boolean;
+    showRepViewModal: boolean;
+    errorMsg: string;
 }
 
 export default defineComponent({
@@ -124,6 +151,9 @@ export default defineComponent({
             report: {},
             showDeleteModal: false,
             showEditModal: false,
+            showRepDeleteModal: false,
+            showRepViewModal: false,
+            errorMsg: '',
         };
     },
     created() {
@@ -147,6 +177,15 @@ export default defineComponent({
                 this.users.push(user);
             });
         },
+        async fetchReports() {
+            const reports = await reportService.getAll().catch((e) => {
+                console.log('Error fetching reports: ', e);
+            });
+
+            reports.forEach((report: any) => {
+                this.reports.push(report);
+            });
+        },
         displayDeleteModal(user: object) {
             this.user = user;
             this.showDeleteModal = true;
@@ -154,6 +193,14 @@ export default defineComponent({
         displayEditModal(user: object) {
             this.user = user;
             this.showEditModal = true;
+        },
+        displayRepDeleteModal(report: object) {
+            this.report = report;
+            this.showRepDeleteModal = true;
+        },
+        displayRepViewModal(report: object) {
+            this.report = report;
+            this.showRepViewModal = true;
         },
         toggleDeleteModal(isModalOpen: boolean) {
             isModalOpen = this.showDeleteModal = !this.showDeleteModal;
@@ -163,10 +210,22 @@ export default defineComponent({
             isModalOpen = this.showEditModal = !this.showEditModal;
             return isModalOpen;
         },
+        toggleRepDeleteModal(isModalOpen: boolean) {
+            isModalOpen = this.showRepDeleteModal = !this.showRepDeleteModal;
+            return isModalOpen;
+        },
+        toggleRepViewModal(isModalOpen: boolean) {
+            isModalOpen = this.showRepViewModal = !this.showRepViewModal;
+            return isModalOpen;
+        },
+        triggerDeleteRep() {
+            console.log('delete rep triggered');
+        },
         triggerEditUser(user: any) {
-            console.log('USER BEING EDITED', user);
-
+            // @ts-ignore
             const loggedInUser = JSON.parse(localStorage.getItem('user'));
+
+            this.errorMsg = '';
 
             // If user is editing their own account, logout and navigate back to homepage
             if (user.id === loggedInUser.id) {
@@ -179,6 +238,7 @@ export default defineComponent({
                     .then(() => router.push('/'))
                     .catch((e) => {
                         console.log('---Error while updating self', e);
+                        this.errorMsg = `Error: ${e}`;
                     });
             } else {
                 userService
@@ -188,11 +248,13 @@ export default defineComponent({
                     })
                     .catch((e) => {
                         console.log('Error during user update: ', e);
+                        this.errorMsg = `Error: ${e}`;
                     });
             }
         },
         triggerDeleteUser(userId: number) {
             const loggedInUser = JSON.parse(localStorage.getItem('user'));
+            this.errorMsg = '';
 
             // If user is deleting their own account, logout and navigate back to
             if (userId === loggedInUser.id) {
@@ -202,6 +264,7 @@ export default defineComponent({
                     .then(() => router.push('/'))
                     .catch((e) => {
                         console.log('---Error while deleting self', e);
+                        this.errorMsg = `Error: ${e}`;
                     });
             } else {
                 userService
@@ -211,17 +274,9 @@ export default defineComponent({
                     })
                     .catch((e) => {
                         console.log('Error during deletion: ', e);
+                        this.errorMsg = `Error: ${e}`;
                     });
             }
-        },
-        async fetchReports() {
-            const reports = await reportService.getAll().catch((e) => {
-                console.log('Error fetching reports: ', e);
-            });
-
-            reports.forEach((report: any) => {
-                this.reports.push(report);
-            });
         },
     },
 });

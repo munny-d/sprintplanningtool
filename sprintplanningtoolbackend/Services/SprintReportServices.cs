@@ -20,7 +20,7 @@
 
         public void CreateReport(CreateReportRequest model)
         {
-            // map model to new sprint object
+            // map model to a new sprint object
             var report = _mapper.Map<SprintReport>(model);
             report.CreatedDate = DateTime.Now.ToLocalTime();
 
@@ -67,7 +67,7 @@
         {
             var teamMembers = _context.TeamMembers;
 
-            List<TeamMember> newMembers = new List<TeamMember>();
+            List<TeamMember> newMembers = new();
 
             foreach (var member in teamMembers)
             {
@@ -78,6 +78,19 @@
             }
             
             return newMembers;
+        }        
+        
+        public SprintReport AddTeamMembersToReport(int id)
+        {
+            var team = GetTeamMembersFromReport(id);
+            var report = GetReportById(id);
+
+            foreach (var member in team)
+            {
+                report?.TeamMembers?.Add(member);
+            }
+
+            return report;
         }
     }
 }

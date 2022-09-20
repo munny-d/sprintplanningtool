@@ -55,10 +55,6 @@ interface Report {
     createdByUser: any;
 }
 
-interface Data {
-    report: Report;
-}
-
 export default defineComponent({
     data() {
         return {
@@ -84,9 +80,6 @@ export default defineComponent({
         async generateReport() {
             const report = await reportService.getLatest();
             this.report = report;
-
-            const teamMembers = await reportService.getTeamMembers(report.id);
-            this.report.teamMembers = teamMembers;
 
             return this.report;
         },

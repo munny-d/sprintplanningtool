@@ -61,6 +61,7 @@ namespace sprintplanningtoolbackend.Controllers
         public IActionResult GetReportById(int id)
         {
             var report = _reportService.GetReportById(id);
+            _reportService.AddTeamMembersToReport(id);
             return Ok(report);
         }        
         
@@ -73,6 +74,7 @@ namespace sprintplanningtoolbackend.Controllers
         public IActionResult GetLatest()
         {
             var report = _reportService.GetRecentlyCreatedReport();
+            _reportService.AddTeamMembersToReport(report.Id);
             return Ok(report);
         }
 
