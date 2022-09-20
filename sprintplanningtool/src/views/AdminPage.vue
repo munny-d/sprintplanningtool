@@ -33,11 +33,51 @@
                     </table>
                 </div>
             </b-accordion-item>
-            <b-accordion-item title="Reports"> </b-accordion-item>
+            <b-accordion-item title="Reports" @click="fetchReports()">
+                <div class="container">
+                    <table id="team-table">
+                        <tbody>
+                            <tr v-for="report in reports" :key="report.id">
+                                <td id="td-text">
+                                    <ul>
+                                        <li>Report ID: {{ report.id }}</li>
+                                        <li>
+                                            Start: {{ report.sprintStartDate }}
+                                        </li>
+                                        <li>End: {{ report.sprintEndDate }}</li>
+                                        <li>
+                                            Created by:
+                                            {{ report.createdByUser }}
+                                        </li>
+                                    </ul>
+                                    <div class="btn-position">
+                                        <b-button
+                                            variant="primary"
+                                            size="sm"
+                                            id="delete-btn"
+                                            @click="displayDeleteModal(user)"
+                                        >
+                                            view
+                                        </b-button>
+                                        <b-button
+                                            variant="danger"
+                                            size="sm"
+                                            id="delete-btn"
+                                            @click="displayDeleteModal(user)"
+                                        >
+                                            delete
+                                        </b-button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </b-accordion-item>
         </b-accordion>
         <div>
             <user-delete-modal
-                :user="user"
+                :report="report"
                 :showModal="showDeleteModal"
                 v-if="showDeleteModal"
                 @isModalOpen="toggleDeleteModal"
@@ -50,7 +90,7 @@
                 :showModal="showEditModal"
                 v-if="showEditModal"
                 @isModalOpen="toggleEditModal"
-                @userId="triggerEditUser"
+                @updatedUser="triggerEditUser"
             ></user-edit-modal>
         </div>
     </div>
@@ -59,13 +99,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { userService } from '../services/user-service';
+import { reportService } from '../services/report-service';
 import UserDeleteModal from '../components/UserDeleteModal.vue';
 import UserEditModal from '../components/UserEditModal.vue';
+import ReportDeleteModal from '../components/ReportDeleteModal.vue';
+import ReportViewModal from '../components/UserEditModal.vue';
 import router from '../router';
 
 interface Data {
     users: [];
-    user: {};
+    user: object;
+    reports: [];
+    report: object;
     showDeleteModal: boolean;
     showEditModal: boolean;
 }
@@ -75,19 +120,23 @@ export default defineComponent({
         return {
             users: [],
             user: {},
+            reports: [],
+            report: {},
             showDeleteModal: false,
-            showEditModal: false
+            showEditModal: false,
         };
     },
     created() {
-        this.populateTable();
+        this.fetchUsers();
     },
     components: {
         UserDeleteModal,
         UserEditModal,
+        ReportDeleteModal,
+        ReportViewModal,
     },
     methods: {
-        async populateTable() {
+        async fetchUsers() {
             const users = await userService
                 .getAll()
                 .catch((error) => console.log(error));
@@ -104,32 +153,48 @@ export default defineComponent({
         displayEditModal(user: object) {
             this.user = user;
             this.showEditModal = true;
-
         },
         toggleDeleteModal(isModalOpen: boolean) {
-            console.log('TOGGLE MODAL FOR DELETE:', isModalOpen);
             isModalOpen = this.showDeleteModal = !this.showDeleteModal;
             return isModalOpen;
         },
         toggleEditModal(isModalOpen: boolean) {
-            console.log('TOGGLE MODAL FOR EDIT:', isModalOpen);
             isModalOpen = this.showEditModal = !this.showEditModal;
             return isModalOpen;
         },
-        triggerEditUser(userId: number) {
-            console.log("USER ID IN EDIT: " userId);
+        triggerEditUser(user: any) {
+            console.log('USER BEING EDITED', user);
 
-        },
-        triggerDeleteUser(userId: number) {
-            console.log('user id in parent', userId);
             const loggedInUser = JSON.parse(localStorage.getItem('user'));
 
-            console.log('ID OF LOGGED IN', loggedInUser.id);
+            // If user is editing their own account, logout and navigate back to homepage
+            if (user.id === loggedInUser.id) {
+                alert(
+                    'Logged in user information is being updated... you may be logged and required to sign in again.'
+                );
+                userService
+                    .update(user)
+                    .then(() => userService.logout())
+                    .then(() => router.push('/'))
+                    .catch((e) => {
+                        console.log('---Error while updating self', e);
+                    });
+            } else {
+                userService
+                    .update(user)
+                    .then(() => {
+                        location.reload();
+                    })
+                    .catch((e) => {
+                        console.log('Error during user update: ', e);
+                    });
+            }
+        },
+        triggerDeleteUser(userId: number) {
+            const loggedInUser = JSON.parse(localStorage.getItem('user'));
 
             // If user is deleting their own account, logout and navigate back to
             if (userId === loggedInUser.id) {
-                console.log('IM ABOUT TO DELETE MAHSELF');
-
                 userService
                     .delete(userId)
                     .then(() => userService.logout())
@@ -141,9 +206,6 @@ export default defineComponent({
                 userService
                     .delete(userId)
                     .then(() => {
-                        console.log('user is deleted...');
-                        console.log('repopulating users...');
-                        console.log('current set of users: ', this.users);
                         location.reload();
                     })
                     .catch((e) => {
@@ -151,11 +213,29 @@ export default defineComponent({
                     });
             }
         },
+        async fetchReports() {
+            console.log('FETCH REPORTS TRIGGERED');
+            const reports = await reportService.getAll().catch((e) => {
+                console.log('Error fetching reports: ', e);
+            });
+
+            reports.forEach((report: any) => {
+                this.reports.push(report);
+            });
+        },
     },
 });
 </script>
 
 <style>
+ul {
+    list-style: none;
+}
+
+li {
+    margin-bottom: 2px;
+}
+
 .container {
     display: flex;
     justify-content: center;

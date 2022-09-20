@@ -101,15 +101,15 @@ interface Data {
     isValid: boolean;
 }
 
-export default defineComponent ({
+export default defineComponent({
     data(): Data {
         return {
             showModal: true,
             showConfirmModal: false,
-            updateUser: { username: '', password: '', email: '' },
+            updateUser: { username: '', password: '', email: '', id: 0 },
             repeatPwd: '',
             isValid: false,
-            isErrorMsg: false
+            isErrorMsg: false,
         };
     },
     components: {
@@ -138,8 +138,9 @@ export default defineComponent ({
             this.showModal = false;
             this.isErrorMsg = false;
 
-            this.$emit('userId', this.user.id);
-            this.$emit('updatedUserInfo', this.updateUser);
+            this.updateUser.id = this.user.id;
+
+            this.$emit('updatedUser', this.updateUser);
             this.$emit('isModalOpen', false);
         },
         onClose() {
@@ -169,10 +170,12 @@ export default defineComponent ({
         },
         validatePassword(password: string): boolean {
             password.trim();
-            this.isValid = password.length > 6 && this.isValid = password == this.repeatPwd;
+            this.isValid = password.length > 6 && password == this.repeatPwd;
 
             if (!this.isValid) {
-                alert('Invalid password entered. Password must be at least 6 characters long and both passwords must match.');
+                alert(
+                    'Invalid password entered. Password must be at least 6 characters long and both passwords must match.'
+                );
                 this.isValid = false;
             }
             return this.isValid;
