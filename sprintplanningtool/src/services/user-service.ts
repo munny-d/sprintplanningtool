@@ -36,6 +36,7 @@ function logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('user');
     router.push('/');
+    router.go(0);
 }
 
 async function register(user: any) {

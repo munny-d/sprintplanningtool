@@ -3,11 +3,11 @@
     using Microsoft.EntityFrameworkCore;
     using sprintplanningtoolbackend.Models;
 
-    public class DBContext : DbContext
+    public class DataContext : DbContext
     {
         protected readonly IConfiguration Configuration;
 
-        public DBContext(IConfiguration configuration)
+        public DataContext(IConfiguration configuration)
         {
             Configuration = configuration;
         }
@@ -26,8 +26,8 @@
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<SprintReport> SprintReports { get; set; }
-        public DbSet<TeamMember> TeamMembers { get; set; }
+        public virtual DbSet<User>? Users { get; set; }
+        public virtual DbSet<SprintReport>? SprintReports { get; set; }
+        public virtual DbSet<TeamMember>? TeamMembers { get; set; }
     }
 }

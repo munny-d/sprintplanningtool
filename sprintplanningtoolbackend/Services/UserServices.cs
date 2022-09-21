@@ -8,12 +8,12 @@
 
     public class UserService : IUserService
     {
-        private DBContext _context;
+        private DataContext _context;
         private IJwtUtils _jwtUtils;
         private readonly IMapper _mapper;
 
         public UserService(
-            DBContext context,
+            DataContext context,
             IJwtUtils jwtUtils,
             IMapper mapper)
         {

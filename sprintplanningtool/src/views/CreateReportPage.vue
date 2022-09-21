@@ -117,12 +117,14 @@
                         <label class="label-space" for="absent-days"
                             >Planned number of holiday(s)</label
                         >
+                        <ErrorMessage name="absentDays" class="invalid-field" />
                         <Field
                             name="absentDays"
                             id="absent-days"
                             type="number"
                             min="0"
                             :max="workDays"
+                            :disabled="teamMembers.length == 0"
                             v-model="absentDays"
                             @change="calculateCapacity"
                             class="number-input"
@@ -277,7 +279,11 @@ interface Data {
 // A schema that uses Yup (MIT licensed JS package) for Form validation.
 const schema = yup.object().shape({
     teamSize: yup.number().min(1, 'There needs to be at least 1 member added.'),
-    absentDays: yup.number(),
+    absentDays: yup
+        .number()
+        .typeError(
+            'Only numbers are allowed in this field. Please ensure it is not greater than the number of work days.'
+        ),
     sprintGoal: yup
         .string()
         .matches(
@@ -409,8 +415,14 @@ export default defineComponent({
                 return (this.capacity = 0);
             }
 
-            let absentPercentage = (this.absentDays / this.workDays) * 100;
+            if (this.absentDays > this.workDays) {
+                alert(
+                    'ERROR: absent days cannot be greater than the number of work days. Please fill in the form again.'
+                );
+                location.reload();
+            }
 
+            let absentPercentage = (this.absentDays / this.workDays) * 100;
             this.capacity = 100 - absentPercentage;
         },
         calculateTotalSP() {

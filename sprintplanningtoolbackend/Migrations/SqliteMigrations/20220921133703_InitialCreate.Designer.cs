@@ -11,7 +11,7 @@ using sprintplanningtoolbackend.Helpers;
 namespace sprintplanningtoolbackend.Migrations.SqliteMigrations
 {
     [DbContext(typeof(SqliteDBContext))]
-    [Migration("20220920192441_InitialCreate")]
+    [Migration("20220921133703_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

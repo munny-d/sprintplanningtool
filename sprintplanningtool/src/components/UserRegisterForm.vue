@@ -6,6 +6,7 @@
         :validation-schema="schema"
         class="form-style"
     >
+        <span id="title">Register Form</span>
         <ul>
             <ErrorMessage name="username" class="invalid-field" />
             <li class="form-control-inline">
@@ -171,5 +172,16 @@ export default defineComponent({
 label {
     margin: 0.5rem;
     text-align: start;
+}
+
+#title {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    font-size: 30px;
+    font-weight: bold;
+    font-family: monospace !important;
+    border: solid 2px;
+    background-color: ghostwhite;
+    padding-left: 100px;
+    padding-right: 100px;
 }
 </style>

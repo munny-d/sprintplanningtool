@@ -5,7 +5,9 @@ VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "sprintplanningtool", "sprintplanningtool\sprintplanningtool.esproj", "{F52D4B74-461F-4220-B3D4-56C129DED30B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sprintplanningtoolbackend", "sprintplanningtoolbackend\sprintplanningtoolbackend.csproj", "{545F209B-B030-4E7A-BDDD-7E523796F872}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sprintplanningtoolbackend", "sprintplanningtoolbackend\sprintplanningtoolbackend.csproj", "{545F209B-B030-4E7A-BDDD-7E523796F872}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sprintplanningtooltests", "sprintplanningtooltests\sprintplanningtooltests.csproj", "{0FCF82B8-E2A9-4BAE-9C94-4CB988B83B72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{545F209B-B030-4E7A-BDDD-7E523796F872}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{545F209B-B030-4E7A-BDDD-7E523796F872}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{545F209B-B030-4E7A-BDDD-7E523796F872}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FCF82B8-E2A9-4BAE-9C94-4CB988B83B72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FCF82B8-E2A9-4BAE-9C94-4CB988B83B72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FCF82B8-E2A9-4BAE-9C94-4CB988B83B72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FCF82B8-E2A9-4BAE-9C94-4CB988B83B72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

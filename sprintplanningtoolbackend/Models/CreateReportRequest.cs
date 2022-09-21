@@ -30,6 +30,6 @@
         [Required(ErrorMessage = "Please enter a sprint goal.")]
         public string? SprintGoal { get; set; }
 
-        public string CreatedByUser { get; set; }
+        public string? CreatedByUser { get; set; }
     }
 }

@@ -90,9 +90,9 @@ namespace sprintplanningtoolbackend.Controllers
         /// <returns></returns>
         // GET api/<ReportsController>/team
         [HttpGet("team/{id}")]
-        public IActionResult GetTeamById(int id)
+        public IActionResult GetTeamById(int sprintId)
         {
-            var team = _reportService.GetTeamMembersFromReport(id);
+            var team = _reportService.GetTeamMembersFromReport(sprintId);
             return Ok(team);
         }
 

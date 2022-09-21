@@ -36,11 +36,10 @@ export default defineComponent({
     },
     watch: {
         $route() {
-            console.log('WATCH');
-
             // @ts-ignore
             const user = JSON.parse(localStorage.getItem('user'));
 
+            // Displays menu items if the user is logged in and has admin rights.
             if (user) {
                 user ? (this.displayBtn = true) : (this.displayBtn = false);
                 user.isAdmin ? (this.isAdmin = true) : (this.isAdmin = false);
