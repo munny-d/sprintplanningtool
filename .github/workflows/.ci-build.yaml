@@ -3,8 +3,6 @@ name: spt_ci_cd_workflow
 on:
     push:
         branches: ['main', 'feature/*']
-    pull_request:
-        branches: ['main']
 
 jobs:
     build_backend:
