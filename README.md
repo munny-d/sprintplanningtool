@@ -6,9 +6,10 @@ This web app was created for the Software Engineering / DevOps module, Summer 20
 ### FOLDER STRUCTURE
 
 -   .github --> this folder contains the .yml file for building the CI pipeline via github
--   sprintplanningtool --> client code
--   sprintplanningtoolbackend --> server code
--   sprintplanningtooltests --> unit tests for business logic
+-   sprintplanningtool.sln --> solution file for Visual Studio
+-   /sprintplanningtool --> client code
+-   /sprintplanningtoolbackend --> server code
+-   /sprintplanningtooltests --> unit tests for business logic
 
 ### PRE-REQUISITES
 
@@ -47,6 +48,6 @@ Pre-requisites for development
 ### HOW TO RUN TESTS
 
 1. In Visual Studio, click on sprintplanningtooltests in the solution explorer
-2. Open test explorer (CTRL+E, T)
+2. Open the test explorer (CTRL+E, T)
 3. Run all tests by hitting the shortcut "CTRL+R, A" or by hitting the run button in the test explorer
 4. Run an individual test by either selecting it in the test explorer or right click the test method and hit run test.
