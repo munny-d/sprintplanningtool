@@ -20,13 +20,11 @@ jobs:
               run: dotnet restore
             - name: Build
               run: dotnet build --no-restore
-            # - name: Test
-            #   run: dotnet test --no-build --verbosity normal
-            - name: Setup Node.js environment
-              uses: actions/setup-node@v3.4.1
+            - name: Use Node.js
+              uses: actions/setup-node@v3
               with:
-                node-version: 16.16.0
-            - name: NPM install
-              run: npm install
-            - name: NPM build
-              run: npm run build
+                node-version: '16.x'
+            - run: cd sprintplanningtool
+            - run: npm ci
+            - run: npm run build --if-present
+                
