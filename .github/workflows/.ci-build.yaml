@@ -7,7 +7,7 @@ on:
         branches: ['main']
 
 jobs:
-    build(backend):
+    build_backend:
         runs-on: ubuntu-latest
 
         steps:
@@ -18,19 +18,7 @@ jobs:
                   dotnet-version: 6.0.x
             - name: Restore dependencies
               run: dotnet restore
-            - name: Build Backend
+            - name: Build + Tests
               run: dotnet build --no-restore
-    tests:
-        - name: Test
-        - run: dotnet test --no-restore --verbosity-normal
-
-    build(frontend):
-        - name: Use Node.js
-          uses: actions/setup-node@v3
-          with:
-              node-version: '16.x'
-        - name: NPM clean install
-        - run: cd sprintplanningtool
-        - run: npm ci
-        - name: Build Frontend
-        - run: npm run build --if-present
+            - name: Unit Tests
+            - run: dotnet test --no-restore--verbosity-normal 
