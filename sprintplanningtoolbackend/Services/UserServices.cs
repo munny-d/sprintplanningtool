@@ -22,7 +22,7 @@
             _mapper = mapper;
         }
 
-        public AuthenticateResponse Authenticate(AuthenticateRequest model)
+        public virtual AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
             var user = _context.Users.SingleOrDefault(x => x.Username == model.Username);
 
