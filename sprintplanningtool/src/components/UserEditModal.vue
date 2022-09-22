@@ -45,8 +45,14 @@
                                 v-model="repeatPwd"
                             ></Field>
                         </li>
+                        <li>
+                            <b-form-checkbox v-model="updateUser.isAdmin"
+                                >Make user admin</b-form-checkbox
+                            >
+                        </li>
                     </ul>
 
+                    <!-- Confirmation modal -->
                     <div class="modal__action">
                         <b-button
                             variant="outline-success"
@@ -96,9 +102,10 @@ import { Form, Field } from 'vee-validate';
 interface Data {
     showModal: boolean;
     showConfirmModal: boolean;
-    updateUser: object;
+    updateUser: object | any;
     repeatPwd: string;
     isValid: boolean;
+    isErrorMsg: boolean;
 }
 
 export default defineComponent({
@@ -106,7 +113,13 @@ export default defineComponent({
         return {
             showModal: true,
             showConfirmModal: false,
-            updateUser: { username: '', password: '', email: '', id: 0 },
+            updateUser: {
+                username: '',
+                password: '',
+                email: '',
+                id: 0,
+                isAdmin: false,
+            },
             repeatPwd: '',
             isValid: false,
             isErrorMsg: false,
@@ -117,11 +130,12 @@ export default defineComponent({
         Field,
     },
     props: {
-        user: {},
+        user: {} as any,
     },
     methods: {
         confirmEdit() {
-            const newUserInfo = this.updateUser;
+            const newUserInfo: any = this.updateUser;
+            console.log('newUserInfo', newUserInfo);
 
             // Validation logic
             if (newUserInfo.username)
@@ -130,7 +144,7 @@ export default defineComponent({
             if (newUserInfo.password || this.repeatPwd)
                 this.validatePassword(newUserInfo.password);
 
-            if (!this.isValid) {
+            if (!this.isValid && !this.updateUser.isAdmin) {
                 return;
             }
 

@@ -2,7 +2,7 @@
 {
     using Microsoft.EntityFrameworkCore;
 
-    public class SqliteDBContext : DBContext
+    public class SqliteDBContext : DataContext
     {
         public SqliteDBContext(IConfiguration configuration) : base(configuration) { }
 

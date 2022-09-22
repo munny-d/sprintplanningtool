@@ -64,7 +64,8 @@ namespace sprintplanningtoolbackend.Migrations.SqliteMigrations
                         name: "FK_TeamMembers_SprintReports_SprintReportId",
                         column: x => x.SprintReportId,
                         principalTable: "SprintReports",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

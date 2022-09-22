@@ -11,7 +11,7 @@ using sprintplanningtoolbackend.Helpers;
 namespace sprintplanningtoolbackend.Migrations.SqliteMigrations
 {
     [DbContext(typeof(SqliteDBContext))]
-    [Migration("20220918230923_InitialCreate")]
+    [Migration("20220921133703_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -109,7 +109,8 @@ namespace sprintplanningtoolbackend.Migrations.SqliteMigrations
                 {
                     b.HasOne("sprintplanningtoolbackend.Models.SprintReport", null)
                         .WithMany("TeamMembers")
-                        .HasForeignKey("SprintReportId");
+                        .HasForeignKey("SprintReportId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("sprintplanningtoolbackend.Models.SprintReport", b =>

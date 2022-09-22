@@ -30,6 +30,7 @@
         [Required(ErrorMessage = "Please enter a sprint goal.")]
         public string? SprintGoal { get; set; }
 
-        public string CreatedByUser { get; set; }
+        [Required(ErrorMessage = "A valid user must be logged in to create this report.")]
+        public string? CreatedByUser { get; set; }
     }
 }

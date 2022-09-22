@@ -1,5 +1,10 @@
 <template>
-    <Form method="post" @submit="onSubmit" :validation-schema="schema">
+    <Form
+        class="form-style"
+        method="post"
+        @submit="onSubmit"
+        :validation-schema="schema"
+    >
         <ul>
             <ErrorMessage name="loginUsername" class="invalid-field" />
             <li class="form-control-inline">
@@ -30,10 +35,17 @@
                 account details, please contact an admin.
             </p>
             <p class="error">{{ errorMsg }}</p>
-            <button class="btn form-btn" type="submit">Login</button>
-            <button class="btn form-btn" type="button" @click="onClose">
+            <b-button variant="primary" class="form-btn" type="submit"
+                >Login</b-button
+            >
+            <b-button
+                variant="danger"
+                class="form-btn"
+                type="button"
+                @click="onClose"
+            >
                 Cancel
-            </button>
+            </b-button>
         </ul>
     </Form>
 </template>
@@ -95,6 +107,7 @@ export default defineComponent({
                 await userService
                     .login(username, password)
                     .then(() => {
+                        this.$emit('isLoggedIn', true);
                         router.push({ path: '/create-report' });
                     })
                     .catch((error) => {
@@ -121,5 +134,9 @@ export default defineComponent({
     font-size: small;
     margin: 0;
     display: block;
+}
+
+label {
+    margin: 1rem;
 }
 </style>

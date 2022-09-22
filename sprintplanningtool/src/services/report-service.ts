@@ -6,7 +6,7 @@ export const reportService = {
     getById,
     getLatest,
     getTeamMembers,
-    _delete,
+    delete: _delete,
 };
 
 async function create(report: any) {
@@ -61,7 +61,7 @@ async function getLatest() {
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
-async function _delete(id: string) {
+async function _delete(id: number) {
     const requestOptions = {
         method: 'DELETE',
         headers: authHeader() as HeadersInit,

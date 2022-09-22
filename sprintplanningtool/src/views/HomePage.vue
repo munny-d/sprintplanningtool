@@ -2,30 +2,22 @@
     <div class="main">
         <h1 id="home-title">Sprint Planning Tool</h1>
 
-        <button
-            class="btn"
-            @click="toggleRegisterForm"
-            :disabled="isLoginFormOpen"
-        >
+        <b-button @click="toggleRegisterForm" :disabled="isLoginFormOpen">
             Register
-        </button>
+        </b-button>
 
-        <button
-            class="btn"
-            @click="toggleLoginForm"
-            :disabled="isRegisterFormOpen"
-        >
+        <b-button @click="toggleLoginForm" :disabled="isRegisterFormOpen">
             Login
-        </button>
+        </b-button>
 
         <!-- Register Form -->
-        <UserRegisterForm
+        <user-register-form
             v-if="isRegisterFormOpen"
             @isFormOpen="toggleRegisterForm"
         />
 
         <!-- Login Form -->
-        <UserLoginForm v-if="isLoginFormOpen" @isFormOpen="toggleLoginForm" />
+        <user-login-form v-if="isLoginFormOpen" @isFormOpen="toggleLoginForm" />
     </div>
 </template>
 
@@ -66,10 +58,6 @@ export default defineComponent({
     text-align: center;
 }
 
-ul {
-    list-style-type: none;
-}
-
 .btn {
     font: inherit;
     padding: 0.5rem 1.5rem;
@@ -101,8 +89,6 @@ ul {
 form {
     background-color: #e4dceb;
     padding: 1rem;
-    border: solid 2px black;
-    border-radius: 6px;
     font: inherit;
     margin: auto;
     margin-top: 25px;

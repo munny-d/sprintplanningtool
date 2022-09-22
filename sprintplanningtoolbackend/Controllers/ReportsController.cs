@@ -48,6 +48,11 @@ namespace sprintplanningtoolbackend.Controllers
         public IActionResult GetAllReports()
         {
             var reports = _reportService.GetAllReports();
+
+            foreach (var report in reports)
+            {
+                _reportService.AddTeamMembersToReport(report.Id);
+            }
             return Ok(reports);
         }
 
@@ -61,6 +66,7 @@ namespace sprintplanningtoolbackend.Controllers
         public IActionResult GetReportById(int id)
         {
             var report = _reportService.GetReportById(id);
+            _reportService.AddTeamMembersToReport(id);
             return Ok(report);
         }        
         
@@ -73,6 +79,7 @@ namespace sprintplanningtoolbackend.Controllers
         public IActionResult GetLatest()
         {
             var report = _reportService.GetRecentlyCreatedReport();
+            _reportService.AddTeamMembersToReport(report.Id);
             return Ok(report);
         }
 
@@ -83,9 +90,9 @@ namespace sprintplanningtoolbackend.Controllers
         /// <returns></returns>
         // GET api/<ReportsController>/team
         [HttpGet("team/{id}")]
-        public IActionResult GetTeamById(int id)
+        public IActionResult GetTeamById(int sprintId)
         {
-            var team = _reportService.GetTeamMembersFromReport(id);
+            var team = _reportService.GetTeamMembersFromReport(sprintId);
             return Ok(team);
         }
 

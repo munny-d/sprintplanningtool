@@ -6,12 +6,12 @@
 
     public class SprintReportServices : ISprintReportServices
     {
-        private DBContext _context;
+        private DataContext _context;
         private readonly IMapper _mapper;
 
 
         public SprintReportServices(
-                DBContext context,
+                DataContext context,
                 IMapper mapper)
         {
             _context = context;
@@ -20,18 +20,18 @@
 
         public void CreateReport(CreateReportRequest model)
         {
-            // map model to new sprint object
+            // map model to a new sprint object
             var report = _mapper.Map<SprintReport>(model);
             report.CreatedDate = DateTime.Now.ToLocalTime();
 
             // save report
-            _context.SprintReports.Add(report);
-            _context.SaveChanges();
+            _context?.SprintReports?.Add(report);
+            _context?.SaveChanges();
         }
 
         public List<SprintReport> GetReportsByUsername(string username)
         {
-            var reports = _context.SprintReports.Where(x => x.CreatedByUser == username)
+            var reports = _context?.SprintReports?.Where(x => x.CreatedByUser == username)
                 .ToList();
 
             // validation check
@@ -42,16 +42,16 @@
 
         public SprintReport GetReportById(int id)
         {
-            var report = _context.SprintReports.Find(id);
+            var report = _context.SprintReports?.Find(id);
             if (report == null) throw new KeyNotFoundException("Sprint Report not found");
             return report;
         }        
-        public SprintReport GetRecentlyCreatedReport()
+        public SprintReport? GetRecentlyCreatedReport()
         {
             return _context.SprintReports.OrderByDescending(x => x.CreatedDate).ToList().First();
         }
         
-        public IEnumerable<SprintReport> GetAllReports()
+        public IEnumerable<SprintReport>? GetAllReports()
         {
             return _context.SprintReports;
         }
@@ -59,15 +59,15 @@
         public void DeleteReport(int id)
         {
             var report = GetReportById(id);
-            _context.SprintReports.Remove(report);
-            _context.SaveChanges();
+            _context?.SprintReports?.Remove(report);
+            _context?.SaveChanges();
         }
 
         public IEnumerable<TeamMember> GetTeamMembersFromReport(int id)
         {
-            var teamMembers = _context.TeamMembers;
+            var teamMembers = _context?.TeamMembers;
 
-            List<TeamMember> newMembers = new List<TeamMember>();
+            List<TeamMember> newMembers = new();
 
             foreach (var member in teamMembers)
             {
@@ -78,6 +78,19 @@
             }
             
             return newMembers;
+        }        
+        
+        public SprintReport AddTeamMembersToReport(int id)
+        {
+            var team = GetTeamMembersFromReport(id);
+            var report = GetReportById(id);
+
+            foreach (var member in team)
+            {
+                report?.TeamMembers?.Add(member);
+            }
+
+            return report;
         }
     }
 }

@@ -107,7 +107,8 @@ namespace sprintplanningtoolbackend.Migrations.SqliteMigrations
                 {
                     b.HasOne("sprintplanningtoolbackend.Models.SprintReport", null)
                         .WithMany("TeamMembers")
-                        .HasForeignKey("SprintReportId");
+                        .HasForeignKey("SprintReportId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("sprintplanningtoolbackend.Models.SprintReport", b =>

@@ -26,14 +26,14 @@ services.AddScoped<ISprintReportServices, SprintReportServices>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-services.AddDbContext<DBContext, SqliteDBContext>();
+services.AddDbContext<DataContext, SqliteDBContext>();
 
 var app = builder.Build();
 
 // migrate any database changes on startup (includes initial db creation)
 using (var scope = app.Services.CreateScope())
 {
-    var dataContext = scope.ServiceProvider.GetRequiredService<DBContext>();
+    var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
     dataContext.Database.Migrate();
 }
 

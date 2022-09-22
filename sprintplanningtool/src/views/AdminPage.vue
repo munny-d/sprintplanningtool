@@ -1,6 +1,7 @@
 <template>
     <div>
         <h1>Admin Console</h1>
+        <p class="error">{{ errorMsg }}</p>
         <b-accordion>
             <b-accordion-item title="Users">
                 <div class="container">
@@ -32,8 +33,21 @@
                         </tbody>
                     </table>
                 </div>
+                <hr />
+                <b-button
+                    variant="outline-primary"
+                    title="Click to create a new user"
+                    @click="toggleRegisterForm"
+                    >{{ createUserBtnTxt }}</b-button
+                >
+
+                <!-- Register Form -->
+                <user-register-form
+                    v-if="isRegisterFormOpen"
+                    @isFormOpen="toggleRegisterForm"
+                />
             </b-accordion-item>
-            <b-accordion-item title="Reports">
+            <b-accordion-item class="acc-header" title="Reports">
                 <div class="container">
                     <table id="team-table">
                         <tbody>
@@ -42,9 +56,13 @@
                                     <ul>
                                         <li>Report ID: {{ report.id }}</li>
                                         <li>
-                                            Start: {{ report.sprintStartDate }}
+                                            Start:
+                                            {{ report.sprintStartDate }}
                                         </li>
-                                        <li>End: {{ report.sprintEndDate }}</li>
+                                        <li>
+                                            End:
+                                            {{ report.sprintEndDate }}
+                                        </li>
                                         <li>
                                             Created by:
                                             {{ report.createdByUser }}
@@ -52,20 +70,13 @@
                                     </ul>
                                     <div class="btn-position">
                                         <b-button
-                                            variant="primary"
+                                            variant="outline-primary"
                                             size="sm"
                                             id="delete-btn"
-                                            @click="displayDeleteModal(user)"
+                                            @click="displayReportModal(report)"
+                                            title="Click to open more details"
                                         >
-                                            view
-                                        </b-button>
-                                        <b-button
-                                            variant="danger"
-                                            size="sm"
-                                            id="delete-btn"
-                                            @click="displayDeleteModal(user)"
-                                        >
-                                            delete
+                                            View
                                         </b-button>
                                     </div>
                                 </td>
@@ -75,9 +86,10 @@
                 </div>
             </b-accordion-item>
         </b-accordion>
+        <div></div>
         <div>
             <user-delete-modal
-                :report="report"
+                :user="user"
                 :showModal="showDeleteModal"
                 v-if="showDeleteModal"
                 @isModalOpen="toggleDeleteModal"
@@ -93,6 +105,15 @@
                 @updatedUser="triggerEditUser"
             ></user-edit-modal>
         </div>
+        <div>
+            <report-modal
+                :report="report"
+                :showModal="showReportModal"
+                v-if="showReportModal"
+                @isModalOpen="toggleReportModal"
+                @repId="triggerDeleteReport"
+            ></report-modal>
+        </div>
     </div>
 </template>
 
@@ -102,9 +123,9 @@ import { userService } from '../services/user-service';
 import { reportService } from '../services/report-service';
 import UserDeleteModal from '../components/UserDeleteModal.vue';
 import UserEditModal from '../components/UserEditModal.vue';
-import ReportDeleteModal from '../components/ReportDeleteModal.vue';
-import ReportViewModal from '../components/UserEditModal.vue';
-import router from '../router';
+import ReportModal from '../components/ReportModal.vue';
+import { dateHelper } from '../helpers/date-helper';
+import UserRegisterForm from '../components/UserRegisterForm.vue';
 
 interface Data {
     users: [];
@@ -113,6 +134,10 @@ interface Data {
     report: object;
     showDeleteModal: boolean;
     showEditModal: boolean;
+    showReportModal: boolean;
+    errorMsg: string;
+    isRegisterFormOpen: boolean;
+    createUserBtnTxt: string;
 }
 
 export default defineComponent({
@@ -124,6 +149,10 @@ export default defineComponent({
             report: {},
             showDeleteModal: false,
             showEditModal: false,
+            showReportModal: false,
+            errorMsg: '',
+            isRegisterFormOpen: false,
+            createUserBtnTxt: 'Register new user',
         };
     },
     created() {
@@ -133,8 +162,8 @@ export default defineComponent({
     components: {
         UserDeleteModal,
         UserEditModal,
-        ReportDeleteModal,
-        ReportViewModal,
+        ReportModal,
+        UserRegisterForm,
     },
     methods: {
         async fetchUsers() {
@@ -147,6 +176,25 @@ export default defineComponent({
                 this.users.push(user);
             });
         },
+        async fetchReports() {
+            const reports = await reportService.getAll().catch((e) => {
+                console.log('Error fetching reports: ', e);
+            });
+
+            reports.forEach((report: any) => {
+                // Format ISO date to display as dd-mm-yyyy
+                report.sprintStartDate = dateHelper.formatDate(
+                    report.sprintStartDate
+                );
+                report.sprintEndDate = dateHelper.formatDate(
+                    report.sprintEndDate
+                );
+                report.createdDate = dateHelper.formatDate(report.createdDate);
+
+                // @ts-ignore
+                this.reports.push(report);
+            });
+        },
         displayDeleteModal(user: object) {
             this.user = user;
             this.showDeleteModal = true;
@@ -154,6 +202,17 @@ export default defineComponent({
         displayEditModal(user: object) {
             this.user = user;
             this.showEditModal = true;
+        },
+        displayReportModal(report: object) {
+            this.report = report;
+            this.showReportModal = true;
+        },
+        toggleRegisterForm(isFormOpen: boolean) {
+            isFormOpen = this.isRegisterFormOpen = !this.isRegisterFormOpen;
+            isFormOpen
+                ? (this.createUserBtnTxt = 'Close register form')
+                : (this.createUserBtnTxt = 'Register new user');
+            return isFormOpen;
         },
         toggleDeleteModal(isModalOpen: boolean) {
             isModalOpen = this.showDeleteModal = !this.showDeleteModal;
@@ -163,10 +222,15 @@ export default defineComponent({
             isModalOpen = this.showEditModal = !this.showEditModal;
             return isModalOpen;
         },
+        toggleReportModal(isModalOpen: boolean) {
+            isModalOpen = this.showReportModal = !this.showReportModal;
+            return isModalOpen;
+        },
         triggerEditUser(user: any) {
-            console.log('USER BEING EDITED', user);
-
+            // @ts-ignore
             const loggedInUser = JSON.parse(localStorage.getItem('user'));
+
+            this.errorMsg = '';
 
             // If user is editing their own account, logout and navigate back to homepage
             if (user.id === loggedInUser.id) {
@@ -176,9 +240,9 @@ export default defineComponent({
                 userService
                     .update(user)
                     .then(() => userService.logout())
-                    .then(() => router.push('/'))
                     .catch((e) => {
                         console.log('---Error while updating self', e);
+                        this.errorMsg = `Error: ${e}`;
                     });
             } else {
                 userService
@@ -188,46 +252,55 @@ export default defineComponent({
                     })
                     .catch((e) => {
                         console.log('Error during user update: ', e);
+                        this.errorMsg = `Error: ${e}`;
                     });
             }
         },
         triggerDeleteUser(userId: number) {
+            // @ts-ignore
             const loggedInUser = JSON.parse(localStorage.getItem('user'));
+            this.errorMsg = '';
 
             // If user is deleting their own account, logout and navigate back to
             if (userId === loggedInUser.id) {
                 userService
                     .delete(userId)
                     .then(() => userService.logout())
-                    .then(() => router.push('/'))
                     .catch((e) => {
                         console.log('---Error while deleting self', e);
+                        this.errorMsg = `Error: ${e}`;
                     });
             } else {
                 userService
                     .delete(userId)
                     .then(() => {
+                        alert('User has been deleted');
                         location.reload();
                     })
                     .catch((e) => {
                         console.log('Error during deletion: ', e);
+                        this.errorMsg = `Error: ${e}`;
                     });
             }
         },
-        async fetchReports() {
-            const reports = await reportService.getAll().catch((e) => {
-                console.log('Error fetching reports: ', e);
-            });
+        triggerDeleteReport(repId: number) {
+            this.errorMsg = '';
 
-            reports.forEach((report: any) => {
-                this.reports.push(report);
-            });
+            reportService
+                .delete(repId)
+                .then(() => {
+                    alert('Report has been deleted');
+                    location.reload();
+                })
+                .catch((e) => {
+                    console.log('---Error while deleting report: ', e);
+                });
         },
     },
 });
 </script>
 
-<style>
+<style scoped>
 ul {
     list-style: none;
 }
@@ -266,8 +339,27 @@ li {
     margin-top: 2rem;
 }
 
-.accordion-button:not(.collapsed) {
-    background: blueviolet;
-    color: white;
+table {
+    width: 70%;
+    border-collapse: collapse;
+    border-width: 2px;
+    border-style: solid;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    background-color: rgb(239, 239, 239);
+    text-align: center;
+}
+
+table td,
+table th {
+    border-width: 2px;
+    border-color: rgb(70, 59, 76);
+    border-style: solid;
+    padding: 3px;
+}
+
+.form-style {
+    width: fit-content;
+    margin-bottom: 0.5rem;
 }
 </style>
