@@ -22,7 +22,7 @@ jobs:
               run: dotnet build --no-restore
     tests:
         - name: Test
-        - run: dotnet test --no-restore --verbosity-normal
+        - run: dotnet test --no-restore--verbosity-normal
 
     build(frontend):
         - name: Use Node.js
