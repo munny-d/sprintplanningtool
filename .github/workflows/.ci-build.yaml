@@ -7,7 +7,7 @@ on:
         branches: ['main']
 
 jobs:
-    build_backend:
+    build:
         runs-on: ubuntu-latest
 
         steps:
@@ -18,7 +18,8 @@ jobs:
                   dotnet-version: 6.0.x
             - name: Restore dependencies
               run: dotnet restore
-            - name: Build + Tests
+            - name: Build API
               run: dotnet build --no-restore
-            - name: Unit Tests
-            - run: dotnet test --no-restore--verbosity-normal 
+            - name: Test
+              run: dotnet test --no-build --verbosity normal
+                
