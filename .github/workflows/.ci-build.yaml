@@ -7,35 +7,31 @@ on:
         branches: ['main']
 
 jobs:
-  build:
+    build_backend:
         runs-on: ubuntu-latest
 
         steps:
-        - uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
-
-        - name: Setup .NET
-          uses: actions/setup-dotnet@v1
-          with:
-            dotnet-version: 6.0.x
-
-        - name: Restore dependencies
-          run: dotnet restore
-
-        - name: Build
-          run: dotnet build -c Release --no-restore
-
-        - name: Test
-          run: dotnet test -c Release --no-build --verbosity normal --filter "Category!=LongRunning"
-
-    build(frontend):
-        - name: Use Node.js
-          uses: actions/setup-node@v3
-          with:
-              node-version: '16.x'
-        - name: NPM clean install
-        - run: cd sprintplanningtool
-        - run: npm ci
-        - name: Build Frontend
-        - run: npm run build --if-present
+            - uses: actions/checkout@v3
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v2
+              with:
+                  dotnet-version: 6.0.x
+            - name: Restore dependencies
+              run: dotnet restore
+            - name: Build + Tests
+              run: dotnet build --no-restore
+            - name: Unit Tests
+            - run: dotnet test --no-restore--verbosity-normal 
+              
+    build_frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '16.x'
+            - name: NPM clean install
+            - run: cd sprintplanningtool
+            - run: npm ci
+            - name: Build Frontend
+            - run: npm run build --if-present
