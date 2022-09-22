@@ -17,7 +17,7 @@ jobs:
                   dotnet-version: 6.0.x
             - name: Restore dependencies
               run: dotnet restore
-            - name: Build
+            - name: Build API
               run: dotnet build --no-restore
             - name: Run Unit Tests
               run: dotnet test --no-build --verbosity normal
@@ -26,7 +26,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                    node-version: '16.x'
-            - run: cd './sprintplanningtools'
+            - run: cd ./sprintplanningtools
             - name: Install dependencies
               run: npm i
             - name: NPM run build
