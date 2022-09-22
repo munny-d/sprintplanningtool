@@ -32,8 +32,9 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 16.x
-            - name: NPM clean install
-              run: npm ci
+            - name: Install packages
+            - run: cd sprintplanningtool
+            - run: npm ci
             - name: Build Client
               run: npm run build --if-present
             
