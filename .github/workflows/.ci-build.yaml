@@ -3,6 +3,8 @@ name: spt_ci_cd_workflow
 on:
     push:
         branches: ['main', 'feature/*']
+    pull_request:
+        branches: ['main']
 
 jobs:
     build_backend:
@@ -20,4 +22,20 @@ jobs:
               run: dotnet build --no-restore
             - name: Test
               run: dotnet test --no-build --verbosity normal
+    
+    build_frontend:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16.x
+            - name: Change to client folder
+              run: cd sprintplanningtool
+            - name: NPM clean install
+              run: npm ci
+            - name: Build Client
+              run: npm run build --if-present
             
