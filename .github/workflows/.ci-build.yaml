@@ -32,7 +32,7 @@ jobs:
           uses: actions/setup-node@v3
           with:
             node-version: '16.x'
-        - run: cd sprintplanningtool 
+        - run: cd sprintplanningtool/sprintplanningtool 
         - name: Install dependencies
           run: |
               if [ -e package-lock.json ]; then
