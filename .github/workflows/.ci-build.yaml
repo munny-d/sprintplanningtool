@@ -28,7 +28,7 @@ jobs:
                    node-version: '16.x'
             - name: Install dependencies
               working-directory: './sprintplanningtool'
-              run: npm i
+              run: npm ci
             - name: NPM run build
               working-directory: './sprintplanningtool'
               run: npm run build --if-present
