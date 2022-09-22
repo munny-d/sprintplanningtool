@@ -20,21 +20,7 @@ jobs:
               run: dotnet restore
             - name: Build API
               run: dotnet build --no-restore
-            - name: Unit Tests
-              run: dotnet test --no-build --verbosity normal
-              
-    unit_tests:
-        runs-on: ubuntu-latest
-        needs: build_backend
-        steps:
-            - uses: actions/checkout@v3
-            - name: Setup .NET
-              uses: actions/setup-dotnet@v2
-              with:
-                  dotnet-version: 6.0.x
-            - name: Restore dependencies
-              run: dotnet restore
-            - name: Run Tests
+            - name: Run Unit Tests
               run: dotnet test --no-build --verbosity normal
     
     build_frontend:
@@ -46,8 +32,14 @@ jobs:
           uses: actions/setup-node@v3
           with:
             node-version: '16.x'
-        - run: cd sprintplanningtool    
-        - run: npm ci
+        - run: cd sprintplanningtool 
+        - name: Install dependencies
+          run: |
+              if [ -e package-lock.json ]; then
+              npm ci
+              else
+              npm i
+              fi
         - run: npm run build --if-present
         - run: npm test
             
