@@ -22,18 +22,3 @@ jobs:
               run: dotnet build --no-restore
             - name: Unit Tests
             - run: dotnet test --no-restore--verbosity-normal 
-              
-    build_frontend:
-        runs-on: ubuntu-latest
-        
-        steps:
-            - name: Setup Node.js Environment
-            - uses: actions/setup-node@v3
-            - name: Use Node.js
-              with:
-                  node-version: '16.x'
-            - name: NPM clean install
-            - run: cd sprintplanningtool
-            - run: npm ci
-            - name: Build Frontend
-            - run: npm run build --if-present
