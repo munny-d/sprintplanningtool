@@ -8,7 +8,7 @@ This web app was created for the Software Engineering / DevOps module, Summer 20
 -   .github --> this folder contains the .yml file for building the CI pipeline via github
 -   sprintplanningtool.sln --> solution file for Visual Studio
 -   /sprintplanningtool --> client code
--   /sprintplanningtoolbackend --> server code
+-   /sprintplanningtoolbackend --> server code + Sqlite DB
 -   /sprintplanningtooltests --> unit tests for business logic
 
 ### PRE-REQUISITES
@@ -18,7 +18,7 @@ Pre-requisites for development
 -   Visual Studio 2022 with dotnet 6 dependencies installed
 -   Node v16.\*
 -   SQLite 3
-    ** if you do not have the required node version **
+    ** if you do not have the required node version or have errors with npm install **
 -   option 1: downgrade/upgrade your node version to v16.16.0
 -   option 2: install nvm (node version package manager) to switch between different node versions https://github.com/nvm-sh/nvm
 
