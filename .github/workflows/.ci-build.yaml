@@ -20,7 +20,7 @@ jobs:
               run: dotnet restore
             - name: Build API
               run: dotnet build --no-restore
-            - name: Test
+            - name: Unit Tests
               run: dotnet test --no-build --verbosity normal
     
     build_frontend:
@@ -32,8 +32,6 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 16.x
-            - name: Change to client folder
-              run: cd sprintplanningtool
             - name: NPM clean install
               run: npm ci
             - name: Build Client
