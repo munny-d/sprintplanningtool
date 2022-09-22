@@ -6,7 +6,7 @@ on:
     pull_request:
         branches: ['main']
 jobs:
-    build:
+    build_backend:
         runs-on: ubuntu-latest
 
         steps:
@@ -17,20 +17,25 @@ jobs:
                   dotnet-version: 6.0.x
             - name: Restore dependencies
               run: dotnet restore
-            - name: Build API
+            - name: Build
               run: dotnet build --no-restore
             - name: Run Unit Tests
               run: dotnet test --no-build --verbosity normal
+              
+    build_frontend:
+        needs: build_backend
+        runs-on: ubuntu-latest
+        defaults:
+           run:
+            working-directory: './sprintplanningtool'
 
-            - name: Setup Node
-              uses: actions/setup-node@v3
-              with:
-                   node-version: '16.x'
-            - name: Install dependencies
-              working-directory: './sprintplanningtool'
-              run: npm ci
-            - name: NPM run build
-              working-directory: './sprintplanningtool'
-              run: npm run build --if-present
-    
-            
+        steps:
+        - uses: actions/checkout@v3
+        - name: Use Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '16.x'
+        - name: Install dependencies
+          run: npm i
+        - run: npm run build --if-present
+        - run: npm test
