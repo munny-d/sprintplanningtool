@@ -2,7 +2,6 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using sprintplanningtoolbackend.Authorisation;
 using sprintplanningtoolbackend.Helpers;
 using sprintplanningtoolbackend.Models;
 using sprintplanningtoolbackend.Services;
